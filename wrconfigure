@@ -1,0 +1,122 @@
+#! /bin/bash
+
+##### Configuration #####
+
+# Global
+export C_DRIVE=/media/sda2/
+export WIND_HOME=/media/sda2/WindRiver
+export WIND_BASE=$WIND_HOME/vxworks-6.3
+export WIND_LIC_PROXY=$WIND_HOME/diab/5.4.0.0/WIN32/lib
+export LM_LICENSE_FILE=$WIND_HOME/license/zwrsLicense.lic
+export COMPILER_DIR=$WIND_HOME/gnu/3.4.4-vxworks-6.3/x86-win32/bin
+
+# Project
+
+case `pwd` in
+	/media/sda2/Users/Nikita/Documents/FRC980/2010/frc980/workspace/FRC980* )
+		export CPP_PROJECT_WS_ROOT_DIR=C:/Users/Nikita/Documents/FRC980/2010/frc980/workspace
+		export CPP_PROJECT_NAME=FRC980
+		export CPP_PROJECT_ROOT_DIR=$CPP_PROJECT_WS_ROOT_DIR/$CPP_PROJECT_NAME
+		;;
+	* )
+		echo "This directory is not configured as a C++ project"
+		echo "See the configuration section in the 'configure' script"
+		exit 66
+		;;
+esac
+
+##### End User Configuration #####
+
+
+
+
+
+
+#####    #####
+
+command="help"
+
+if [ "x$1" = "xwr" ]
+then
+	command="wr"
+fi
+
+if [ "x$1" = "xpy" ]
+then
+	command="py"
+fi
+
+if [ "$command" = "help" ]
+then
+	cat <<EOF
+Usage: ./configure [method]
+Methods:
+	wr: modify WindRiver makefile to run on Linux
+	py: generate Linux makefile using python script
+EOF
+	exit
+fi
+
+#####     #####
+
+function modify_makefile() {
+	# Usage: modify_makefile <input >output
+	# Modifies a WindRiver makefile so that it will run under Linux
+
+	# Add environmental variables to Makefile
+	#    WIND_HOME, WIND_BASE, WIND_LIC_PROXY, LM_LICENSE_FILE
+
+	# Set the tool path (3 occurances)
+	#    TOOL_PATH = wine $COMPILER_DIR
+	# "wine" is part of the tool path because the tools are .exe files
+
+	# Perform replacements:
+	#    C:/   -> $C_DRIVE (e.g. /media/sda2/)
+	#    ccppc -> ccppc.exe
+	#    nmppc -> "$(TOOL_PATH)nmppc.exe"
+
+	# Remove the line:
+	#    -include $(DEP_FILES)
+	# TODO: figure out what it does and why it gives errors
+
+	sed 's|WIND_HOME :=|FILE_START\n&|' | \
+	sed "s|FILE_START|export WIND_HOME=$WIND_HOME\n&|" |\
+	sed "s|FILE_START|export WIND_BASE=$WIND_BASE\n&|" |\
+	sed "s|FILE_START|export WIND_LIC_PROXY=$WIND_LIC_PROXY\n&|" |\
+	sed "s|FILE_START|export LM_LICENSE_FILE=$LM_LICENSE_FILE\n|" |\
+	\
+	sed "s|TOOL_PATH = |TOOL_PATH = wine $COMPILER_DIR/|g" |\
+	\
+	sed "s|C:/|$C_DRIVE|g" |\
+	sed "s|ccppc|ccppc.exe|g" |\
+	sed 's|nmppc|\$\(TOOL_PATH\)nmppc.exe|g' |\
+	\
+	sed 's|-include $(DEP_FILES)|##DEP_FILES not used on Linux##|g'
+
+}
+
+#####
+
+if [ "$command" = "wr" ]
+then
+	if [ -f PPC603gnu/Makefile ]
+	then
+		echo -n "Modifying WindRiver Makefile for Linux..."
+		modify_makefile <PPC603gnu/Makefile >PPC603gnu/Makefile_linux
+		echo "Done"
+	else
+		echo "WindRiver Makefile not found"
+		echo "Generate the Makefile or use other configuration methods"
+		exit 66
+	fi
+fi
+
+
+
+if [ "$command" = "py" ]
+then
+	echo -n "Manually generating Makefile... "
+	mkdir -p PPC603gnu
+	python `dirname $0`/generate_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
+	echo "Done"
+fi

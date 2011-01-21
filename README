@@ -1,0 +1,14 @@
+Linux compiling scripts for FRC
+
+Requirements:
+ - The current version requires WindRiver files to be present on the
+   system.
+ - Future versions might package the required files
+
+Installation:
+ - Add the folder containing "wrconfigure" and "generate_makefile.py"
+   to the system PATH
+ - Modify the settings section at the top of "wrconfigure"
+
+Usage: (from your project folder)
+ - wrconfigure py && cd PPC603gnu && make -f Makefile_linux
