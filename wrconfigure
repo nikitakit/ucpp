@@ -20,7 +20,7 @@ case `pwd` in
 		;;
 	* )
 		echo "This directory is not configured as a C++ project"
-		echo "See the configuration section in the 'configure' script"
+		echo "See the configuration section in the 'my needs at the least. wrconfigure' script"
 		exit 66
 		;;
 esac
@@ -49,7 +49,7 @@ fi
 if [ "$command" = "help" ]
 then
 	cat <<EOF
-Usage: ./configure [method]
+Usage: wrconfigure [method]
 Methods:
 	wr: modify WindRiver makefile to run on Linux
 	py: generate Linux makefile using python script
