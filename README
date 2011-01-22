@@ -1,4 +1,4 @@
-Linux compiling scripts for FRC
+Universal compiling scripts for FRC
 
 Requirements:
  - The current version requires WindRiver files to be present on the
@@ -6,9 +6,13 @@ Requirements:
  - Future versions might package the required files
 
 Installation:
- - Add the folder containing "wrconfigure" and "generate_makefile.py"
-   to the system PATH
- - Modify the settings section at the top of "wrconfigure"
+ - Add the "makefiles" folder to the system PATH
+ - Modify "makefiles/ucpp-settings"
 
-Usage: (from your project folder)
- - wrconfigure py && cd PPC603gnu && make -f Makefile_linux
+Usage:
+ - ucpp-init -t <team-number>
+        Configures the current directory as an FRC C++ project
+		for your team.
+ - ucpp-configure <command>
+   		Generates a Makefile for your project
+ - cd PPC603gnu && make -f Makefile_linux
