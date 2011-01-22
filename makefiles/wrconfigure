@@ -1,26 +1,31 @@
 #! /bin/bash
 
-#####    #####
-
 command="help"
-
-if [ "x$1" = "xwr" ]
-then
-	command="wr"
-fi
 
 if [ "x$1" = "xpy" ]
 then
 	command="py"
 fi
 
+if [ "x$1" = "xwinpy" ]
+then
+	command="winpy"
+fi
+
+if [ "x$1" = "xwr" ]
+then
+	command="wr"
+fi
+
+
 if [ "$command" = "help" ]
 then
 	cat <<EOF
-Usage: wrconfigure [method]
-Methods:
-	wr: modify WindRiver makefile to run on Linux
-	py: generate Linux makefile using python script
+Usage: wrconfigure [command]
+Commands:
+	py:    generate Linux makefile using python script
+	winpy: generate Windows makefile using python script
+	wr:    modify WindRiver makefile to run on Linux
 EOF
 	exit
 fi
@@ -48,7 +53,7 @@ esac
 
 
 
-#####     #####
+##### Utility functions #####
 
 function modify_makefile() {
 	# Usage: modify_makefile <input >output
@@ -86,7 +91,23 @@ function modify_makefile() {
 
 }
 
-#####
+##### Makefile generation commands #####
+
+if [ "$command" = "py" ]
+then
+	echo -n "Manually generating Linux Makefile... "
+	mkdir -p PPC603gnu
+	python `dirname $0`/generate_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
+	echo "Done"
+fi
+
+if [ "$command" = "winpy" ]
+then
+	echo -n "Manually generating Windows Makefile... "
+	mkdir -p PPC603gnu
+	python `dirname $0`/generate_makefile.py > PPC603gnu/Makefile
+	echo "Done"
+fi
 
 if [ "$command" = "wr" ]
 then
@@ -100,14 +121,4 @@ then
 		echo "Generate the Makefile or use other configuration methods"
 		exit 66
 	fi
-fi
-
-
-
-if [ "$command" = "py" ]
-then
-	echo -n "Manually generating Makefile... "
-	mkdir -p PPC603gnu
-	python `dirname $0`/generate_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
-	echo "Done"
 fi
