@@ -1,0 +1,29 @@
+#! /bin/bash
+
+##### Global ucpp settings #####
+
+export WIND_HOME=/media/sda2/WindRiver
+export WIND_BASE=$WIND_HOME/vxworks-6.3
+export WIND_LIC_PROXY=$WIND_HOME/diab/5.4.0.0/WIN32/lib
+export LM_LICENSE_FILE=$WIND_HOME/license/zwrsLicense.lic
+export COMPILER_DIR=$WIND_HOME/gnu/3.4.4-vxworks-6.3/x86-win32/bin
+
+# The location of the C:/ drive under dual-boot Linux systems
+# This setting is only necessary for "ucpp-configure wr"
+export C_DRIVE=/media/sda2/
+
+# Robot IP to deploy code to
+export DEPLOY_IP=
+
+# Default configure method for "ucpp configure"
+#   Possible values: py, winpy, wr
+# Leave blank to print a help message
+DEFAULT_CONFIGURE_COMMAND=
+
+
+# Individual projects can override any of these settings
+
+
+##### #####
+export HAVE_CPP_PROJECT=no 
+export SCRIPT_INSTALL_DIR=`dirname $0`

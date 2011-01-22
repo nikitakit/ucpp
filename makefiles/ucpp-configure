@@ -1,12 +1,22 @@
 #! /bin/bash
 
-#####    #####
+usage()
+{
+	cat <<EOF
+Usage: ucpp configure <command>
+Commands:
+    py     Generate Linux makefile using python script
+    winpy  Generate Windows makefile using python script
+    wr     Modify WindRiver makefile to run on Linux
+    help   Show this message
+EOF
+}
 
 command="help"
 
-if [ "x$1" = "xwr" ]
+if [ "x$1" = "x" ]
 then
-	command="wr"
+	command="DEFAULT"
 fi
 
 if [ "x$1" = "xpy" ]
@@ -14,20 +24,31 @@ then
 	command="py"
 fi
 
+if [ "x$1" = "xwinpy" ]
+then
+	command="winpy"
+fi
+
+if [ "x$1" = "xwr" ]
+then
+	command="wr"
+fi
+
 if [ "$command" = "help" ]
 then
-	cat <<EOF
-Usage: wrconfigure [method]
-Methods:
-	wr: modify WindRiver makefile to run on Linux
-	py: generate Linux makefile using python script
-EOF
+	usage
 	exit
 fi
 
 ##### Load Configuration #####
 
-source wrsettings
+source ucpp-settings
+
+# Load project configuration, if it exists
+if [ -f .ucpp ]
+then
+	source .ucpp
+fi
 
 # Anything other than "help" requires the current directory
 # to be configured as a C++ project
@@ -37,7 +58,7 @@ case "x$HAVE_CPP_PROJECT" in
 		;;
 	xno)
 		echo "Current directory is not configured as a C++ project"
-		echo "See the configuration section in the 'my needs at the least. wrconfigure' script"
+		echo "Run ucpp init -t <team-number>"
 		exit 66
 		;;
 	x)
@@ -46,9 +67,19 @@ case "x$HAVE_CPP_PROJECT" in
 		;;
 esac
 
+if [ "$command" = "DEFAULT" ]
+then
+	if [ "x$DEFAULT_CONFIGURE_COMMAND" = "x" ]
+	then
+		usage
+		exit
+	else
+		command=$DEFAULT_CONFIGURE_COMMAND
+	fi
+fi
 
 
-#####     #####
+##### Utility functions #####
 
 function modify_makefile() {
 	# Usage: modify_makefile <input >output
@@ -86,7 +117,45 @@ function modify_makefile() {
 
 }
 
-#####
+function add_deploy_target()
+{
+	if [ "x$DEPLOY_IP" = "x" ]
+	then
+		:
+	else
+		cat <<EOF
+
+# Custom targets inserted by ucpp
+
+deploy: \$(PROJECT_TARGETS)
+        ftp $DEPLOY_IP < $SCRIPT_INSTALL_DIR/delcode
+	wput $CPP_PROJECT_NAME/Debug/$CPP_PROJECT_NAME.out ftp://anonymous@$DEPLOY_IP/ni-rt/system/FRC_UserProgram.out
+
+undeploy:
+        ftp $DEPLOY_IP < $SCRIPT_INSTALL_DIR/delcode
+
+EOF
+	fi
+}
+
+##### Makefile generation commands #####
+
+if [ "$command" = "py" ]
+then
+	echo -n "Manually generating Linux Makefile... "
+	mkdir -p PPC603gnu
+	python `dirname $0`/ucpp_gen_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
+	add_deploy_target >> PPC603gnu/Makefile_linux
+	echo "Done"
+fi
+
+if [ "$command" = "winpy" ]
+then
+	echo -n "Manually generating Windows Makefile... "
+	mkdir -p PPC603gnu
+	python `dirname $0`/ucpp_gen_makefile.py > PPC603gnu/Makefile
+	echo "Done"
+fi
 
 if [ "$command" = "wr" ]
 then
@@ -94,20 +163,11 @@ then
 	then
 		echo -n "Modifying WindRiver Makefile for Linux..."
 		modify_makefile <PPC603gnu/Makefile >PPC603gnu/Makefile_linux
+		add_deploy_target >> PPC603gnu/Makefile_linux
 		echo "Done"
 	else
 		echo "WindRiver Makefile not found"
 		echo "Generate the Makefile or use other configuration methods"
 		exit 66
 	fi
-fi
-
-
-
-if [ "$command" = "py" ]
-then
-	echo -n "Manually generating Makefile... "
-	mkdir -p PPC603gnu
-	python `dirname $0`/generate_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
-	echo "Done"
 fi
