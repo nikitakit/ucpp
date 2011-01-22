@@ -1,4 +1,4 @@
-package builder.builder;
+package ucpp.builder;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
@@ -11,7 +11,7 @@ public class SampleNature implements IProjectNature {
 	/**
 	 * ID of this project nature
 	 */
-	public static final String NATURE_ID = "builder.sampleNature";
+	public static final String NATURE_ID = "ucpp.sampleNature";
 
 	private IProject project;
 

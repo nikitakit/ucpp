@@ -1,4 +1,4 @@
-package builder.builder;
+package ucpp.builder;
 
 import java.util.Map;
 
@@ -82,9 +82,9 @@ public class SampleBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	public static final String BUILDER_ID = "builder.sampleBuilder";
+	public static final String BUILDER_ID = "ucpp.sampleBuilder";
 
-	private static final String MARKER_TYPE = "builder.xmlProblem";
+	private static final String MARKER_TYPE = "ucpp.xmlProblem";
 
 	private SAXParserFactory parserFactory;
 
