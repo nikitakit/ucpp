@@ -1,13 +1,25 @@
 #! /bin/bash
 
-if [ "x$1" = "xhelp" ]
-then
+usage()
+{
 	cat <<EOF
-Usage: ucpp-init [options]
+Usage: $0 [options]
 Options:
+    -h, --help
+        Show this message
     -t <team-number>
         Set up deploy/undeploy targets for this team's robot
 EOF
+}
+
+if [ "x$1" = "x-h" ]
+then
+	usage
+fi
+
+if [ "x$1" = "x--help" ]
+then
+	usage
 fi
 
 if [ -f .ucpp ]
@@ -15,6 +27,8 @@ then
 	echo "ERROR: Project already exists"
 	exit 66
 fi
+
+DEPLOY_IP=
 
 ip=$(python <<EOF 2>&1 | grep "10." 
 s="$@"
