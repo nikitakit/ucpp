@@ -128,11 +128,11 @@ function add_deploy_target()
 # Custom targets inserted by ucpp
 
 deploy: \$(PROJECT_TARGETS)
-        ftp $DEPLOY_IP < $SCRIPT_INSTALL_DIR/delcode
+	ftp $DEPLOY_IP < $SCRIPT_INSTALL_DIR/delcode
 	wput $CPP_PROJECT_NAME/Debug/$CPP_PROJECT_NAME.out ftp://anonymous@$DEPLOY_IP/ni-rt/system/FRC_UserProgram.out
 
 undeploy:
-        ftp $DEPLOY_IP < $SCRIPT_INSTALL_DIR/delcode
+	ftp $DEPLOY_IP < $SCRIPT_INSTALL_DIR/delcode
 
 EOF
 	fi
