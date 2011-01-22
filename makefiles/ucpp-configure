@@ -98,6 +98,23 @@ function modify_makefile() {
 
 }
 
+function add_deploy_target()
+{
+	if [ "x$DEPLOY_IP" = "x" ]
+	then
+		:
+	else
+		cat <<EOF
+
+# Custom targets inserted by ucpp
+
+deploy: \$(PROJECT_TARGETS)
+	wput $CPP_PROJECT_NAME/Debug/$CPP_PROJECT_NAME.out ftp://anonymous@$DEPLOY_IP/ni-rt/system/FRC_UserProgram.out
+
+EOF
+	fi
+}
+
 ##### Makefile generation commands #####
 
 if [ "$command" = "py" ]
@@ -105,6 +122,7 @@ then
 	echo -n "Manually generating Linux Makefile... "
 	mkdir -p PPC603gnu
 	python `dirname $0`/ucpp_gen_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
+	add_deploy_target >> PPC603gnu/Makefile_linux
 	echo "Done"
 fi
 
@@ -122,6 +140,7 @@ then
 	then
 		echo -n "Modifying WindRiver Makefile for Linux..."
 		modify_makefile <PPC603gnu/Makefile >PPC603gnu/Makefile_linux
+		add_deploy_target >> PPC603gnu/Makefile_linux
 		echo "Done"
 	else
 		echo "WindRiver Makefile not found"

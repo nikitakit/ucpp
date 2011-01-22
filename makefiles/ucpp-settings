@@ -12,6 +12,11 @@ export COMPILER_DIR=$WIND_HOME/gnu/3.4.4-vxworks-6.3/x86-win32/bin
 # This setting is only necessary for "ucpp-configure wr"
 export C_DRIVE=/media/sda2/
 
+# Robot IP to deploy code to
+export DEPLOY_IP=
+
+
+# Individual projects can override any of these settings
 
 
 ##### #####
