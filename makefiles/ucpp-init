@@ -41,6 +41,8 @@ export CPP_PROJECT_WS_ROOT_DIR=$(dirname `pwd`| sed "s|$C_DRIVE|C:/|g")
 export CPP_PROJECT_ROOT_DIR=$(pwd | sed "s|$C_DRIVE|C:/|g")
 export CPP_PROJECT_NAME=$(basename `pwd`)
 
+# Project settings (for ucpp-configure)
+
 cat <<EOF >.ucpp
 #! /bin/bash
 
@@ -68,12 +70,36 @@ export HAVE_CPP_PROJECT=yes
 
 EOF
 
+# If there is no .wrmakefile, create one
+
 if [ -f .wrmakefile ]
 then
 	:
 else
 	cp $SCRIPT_INSTALL_DIR/.wrmakefile .
 fi
+
+# Create a default Makefile here
+
+cat >Makefile <<'EOF'
+#UCPP makefile
+
+# For the default target, use the WindRiver makefile
+all: force
+	cd PPC603gnu && exec make -f Makefile_linux
+
+# TODO: insert targets that download gcc and WPIlib
+
+# For all other targets, use the WindRiver makefile
+%: force
+	cd PPC603gnu && exec make -f Makefile_linux "$@"
+
+force: ;
+
+EOF
+
+
+# User diagnostics
 
 cat <<EOF
 Initialized UCPP project "$CPP_PROJECT_NAME"
