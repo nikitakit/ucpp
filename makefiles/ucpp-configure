@@ -42,6 +42,8 @@ fi
 
 ##### Load Configuration #####
 
+source ucpp-settings
+
 # Load project configuration, if it exists
 if [ -f .ucpp ]
 then
