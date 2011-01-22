@@ -15,6 +15,11 @@ export C_DRIVE=/media/sda2/
 # Robot IP to deploy code to
 export DEPLOY_IP=
 
+# Default configure method for "ucpp configure"
+#   Possible values: py, winpy, wr
+# Leave blank to print a help message
+DEFAULT_CONFIGURE_COMMAND=
+
 
 # Individual projects can override any of these settings
 

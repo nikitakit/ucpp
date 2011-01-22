@@ -1,6 +1,23 @@
 #! /bin/bash
 
+usage()
+{
+	cat <<EOF
+Usage: ucpp configure <command>
+Commands:
+    py     Generate Linux makefile using python script
+    winpy  Generate Windows makefile using python script
+    wr     Modify WindRiver makefile to run on Linux
+    help   Show this message
+EOF
+}
+
 command="help"
+
+if [ "x$1" = "x" ]
+then
+	command="DEFAULT"
+fi
 
 if [ "x$1" = "xpy" ]
 then
@@ -17,23 +34,13 @@ then
 	command="wr"
 fi
 
-
 if [ "$command" = "help" ]
 then
-	cat <<EOF
-Usage: ucpp configure <command>
-Commands:
-	py:    generate Linux makefile using python script
-	winpy: generate Windows makefile using python script
-	wr:    modify WindRiver makefile to run on Linux
-EOF
+	usage
 	exit
 fi
 
 ##### Load Configuration #####
-
-# Global configuration
-source ucpp-settings
 
 # Load project configuration, if it exists
 if [ -f .ucpp ]
@@ -58,6 +65,16 @@ case "x$HAVE_CPP_PROJECT" in
 		;;
 esac
 
+if [ "$command" = "DEFAULT" ]
+then
+	if [ "x$DEFAULT_CONFIGURE_COMMAND" = "x" ]
+	then
+		usage
+		exit
+	else
+		command=$DEFAULT_CONFIGURE_COMMAND
+	fi
+fi
 
 
 ##### Utility functions #####
