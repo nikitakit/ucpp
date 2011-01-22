@@ -21,7 +21,7 @@ fi
 if [ "$command" = "help" ]
 then
 	cat <<EOF
-Usage: ucpp-configure [command]
+Usage: ucpp-configure <command>
 Commands:
 	py:    generate Linux makefile using python script
 	winpy: generate Windows makefile using python script
@@ -32,7 +32,14 @@ fi
 
 ##### Load Configuration #####
 
+# Global configuration
 source ucpp-settings
+
+# Load project configuration, if it exists
+if [ -f .ucpp ]
+then
+	source .ucpp
+fi
 
 # Anything other than "help" requires the current directory
 # to be configured as a C++ project
@@ -42,7 +49,7 @@ case "x$HAVE_CPP_PROJECT" in
 		;;
 	xno)
 		echo "Current directory is not configured as a C++ project"
-		echo "See the configuration section in the 'my needs at the least. wrconfigure' script"
+		echo "Run ucpp-init -t <team-number>"
 		exit 66
 		;;
 	x)
