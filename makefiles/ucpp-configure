@@ -21,7 +21,7 @@ fi
 if [ "$command" = "help" ]
 then
 	cat <<EOF
-Usage: wrconfigure [command]
+Usage: ucpp-configure [command]
 Commands:
 	py:    generate Linux makefile using python script
 	winpy: generate Windows makefile using python script
@@ -32,7 +32,7 @@ fi
 
 ##### Load Configuration #####
 
-source wrsettings
+source ucpp-settings
 
 # Anything other than "help" requires the current directory
 # to be configured as a C++ project
@@ -97,7 +97,7 @@ if [ "$command" = "py" ]
 then
 	echo -n "Manually generating Linux Makefile... "
 	mkdir -p PPC603gnu
-	python `dirname $0`/generate_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
+	python `dirname $0`/ucpp_gen_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
 	echo "Done"
 fi
 
@@ -105,7 +105,7 @@ if [ "$command" = "winpy" ]
 then
 	echo -n "Manually generating Windows Makefile... "
 	mkdir -p PPC603gnu
-	python `dirname $0`/generate_makefile.py > PPC603gnu/Makefile
+	python `dirname $0`/ucpp_gen_makefile.py > PPC603gnu/Makefile
 	echo "Done"
 fi
 
