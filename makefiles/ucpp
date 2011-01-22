@@ -1,0 +1,18 @@
+#! /bin/bash
+
+# Aliases for typing space instead of "-"
+cmd="$1"
+shift
+if which ucpp-$cmd >& /dev/null
+then
+	exec ucpp-$cmd "$@"
+fi
+
+cat <<EOF
+Usage: ucpp COMMAND [ARGS]
+
+Commands:
+  init      Configure current directory as a UCPP project
+  configure Generate makefiles for this project
+  make      Build the project
+EOF

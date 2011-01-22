@@ -1,0 +1,40 @@
+#! /bin/bash
+
+source ucpp-settings
+
+if [ -f .ucpp ]
+then
+	source .ucpp
+fi
+
+case "x$HAVE_CPP_PROJECT" in
+	xyes)
+		cd PPC603gnu
+		if [ `uname -s` = "Linux" ]
+		then
+			if [ -f Makefile_linux ]
+			then
+				exec make -f Makefile_linux "$@"
+			else
+				echo "No Linux makefile found"
+				echo "Run ucpp configure"
+				exit 66
+			fi
+		fi
+
+		if [ -f Makefile ]
+		then
+			exec make "$@"
+		fi
+
+		;;
+	xno)
+		echo "Current directory is not configured as a C++ project"
+		echo "Run ucpp init -t <team-number>"
+		exit 66
+		;;
+	x)
+		echo "ERROR: failed to load settings"
+		exit 66
+		;;
+esac

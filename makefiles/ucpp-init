@@ -3,7 +3,7 @@
 usage()
 {
 	cat <<EOF
-Usage: $0 [options]
+Usage: ucpp init [options]
 Options:
     -h, --help
         Show this message
