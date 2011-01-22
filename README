@@ -6,13 +6,16 @@ Requirements:
  - Future versions might package the required files
 
 Installation:
- - Add the "makefiles" folder to the system PATH
- - Modify "makefiles/ucpp-settings"
+ - Add the "ucpp" folder to the system PATH
+ - Modify "ucpp/ucpp-settings"
 
 Usage:
- - ucpp-init -t <team-number>
+ - ucpp init -t <team-number>
         Configures the current directory as an FRC C++ project
 		for your team.
- - ucpp-configure <command>
+ - ucpp configure <command>
    		Generates a Makefile for your project
- - cd PPC603gnu && make -f Makefile_linux
+ - make
+		Compile the project
+ - make deploy
+   		Deploy code to the robot
