@@ -1,37 +1,5 @@
 #! /bin/bash
 
-##### Configuration #####
-
-# Global
-export C_DRIVE=/media/sda2/
-export WIND_HOME=/media/sda2/WindRiver
-export WIND_BASE=$WIND_HOME/vxworks-6.3
-export WIND_LIC_PROXY=$WIND_HOME/diab/5.4.0.0/WIN32/lib
-export LM_LICENSE_FILE=$WIND_HOME/license/zwrsLicense.lic
-export COMPILER_DIR=$WIND_HOME/gnu/3.4.4-vxworks-6.3/x86-win32/bin
-
-# Project
-
-case `pwd` in
-	/media/sda2/Users/Nikita/Documents/FRC980/2010/frc980/workspace/FRC980* )
-		export CPP_PROJECT_WS_ROOT_DIR=C:/Users/Nikita/Documents/FRC980/2010/frc980/workspace
-		export CPP_PROJECT_NAME=FRC980
-		export CPP_PROJECT_ROOT_DIR=$CPP_PROJECT_WS_ROOT_DIR/$CPP_PROJECT_NAME
-		;;
-	* )
-		echo "This directory is not configured as a C++ project"
-		echo "See the configuration section in the 'my needs at the least. wrconfigure' script"
-		exit 66
-		;;
-esac
-
-##### End User Configuration #####
-
-
-
-
-
-
 #####    #####
 
 command="help"
@@ -56,6 +24,29 @@ Methods:
 EOF
 	exit
 fi
+
+##### Load Configuration #####
+
+source wrsettings
+
+# Anything other than "help" requires the current directory
+# to be configured as a C++ project
+
+case "x$HAVE_CPP_PROJECT" in
+	xyes)
+		;;
+	xno)
+		echo "Current directory is not configured as a C++ project"
+		echo "See the configuration section in the 'my needs at the least. wrconfigure' script"
+		exit 66
+		;;
+	x)
+		echo "ERROR: failed to load settings"
+		exit 66
+		;;
+esac
+
+
 
 #####     #####
 
