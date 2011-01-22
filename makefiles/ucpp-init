@@ -28,22 +28,20 @@ then
 	exit 66
 fi
 
-DEPLOY_IP=
+source ucpp-settings
 
-ip=$(python <<EOF 2>&1 | grep "10." 
+DEPLOY_IP=$(python <<EOF 2>&1 | grep "10." 
 s="$@"
 n=int(s.split("-t")[1])
 print "10.%i.%i.2\n" % (n//100, n%100)
 EOF
 )
 
-source ucpp-settings
-
-export CPP_PROJECT_ROOT_DIR=`pwd`
+export CPP_PROJECT_WS_ROOT_DIR=$(dirname `pwd`| sed "s|$C_DRIVE|C:/|g")
+export CPP_PROJECT_ROOT_DIR=$(pwd | sed "s|$C_DRIVE|C:/|g")
 export CPP_PROJECT_NAME=$(basename `pwd`)
-export CPP_PROJECT_WS_ROOT_DIR=$(dirname `pwd`)
 
-cat <<EOF | sed "s|$C_DRIVE|C:/|g" >.ucpp
+cat <<EOF >.ucpp
 #! /bin/bash
 
 # Project-specific ucpp settings
@@ -52,8 +50,28 @@ export CPP_PROJECT_WS_ROOT_DIR=$CPP_PROJECT_WS_ROOT_DIR
 export CPP_PROJECT_NAME=$CPP_PROJECT_NAME
 export CPP_PROJECT_ROOT_DIR=$CPP_PROJECT_ROOT_DIR
 
-export DEPLOY_IP=$ip
+export DEPLOY_IP=$DEPLOY_IP
 
 export HAVE_CPP_PROJECT=yes
 
 EOF
+
+if [ -f .wrmakefile ]
+then
+	:
+else
+	cp $SCRIPT_INSTALL_DIR/.wrmakefile .
+fi
+
+cat <<EOF
+Initialized UCPP project "$CPP_PROJECT_NAME"
+  Project root directory  $CPP_PROJECT_ROOT_DIR
+  Workspace directory     $CPP_PROJECT_WS_ROOT_DIR
+EOF
+
+if [ "x$DEPLOY_IP" = "x" ]
+then
+	:
+else
+	echo "  Code deployment IP      $DEPLOY_IP"
+fi
