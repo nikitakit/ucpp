@@ -1,13 +1,15 @@
 Universal compiling scripts for FRC
 
-Requirements:
- - The current version requires WindRiver files to be present on the
-   system.
- - Future versions might package the required files
-
-Installation:
+Installation (Linux with WindRiver present)
  - Add the "ucpp" folder to the system PATH
  - Modify "ucpp/ucpp-settings"
+    - Set C_DRIVE variable to point to the location of your WindRiver folder
+
+Installation (Linux without WindRiver)
+ - Add the "ucpp" folder to the system PATH
+ - Modify "ucpp/ucpp-settings"
+    - Set C_DRIVE varuable to the absolute path to "frc-cpp-linux/gccdist/"
+ - "cd frc-cpp-linux && make -f Makefile_gccdist"
 
 Usage:
  - ucpp init -t <team-number>

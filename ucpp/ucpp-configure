@@ -5,10 +5,12 @@ usage()
 	cat <<EOF
 Usage: ucpp configure <command>
 Commands:
-    py     Generate Linux makefile using python script
-    winpy  Generate Windows makefile using python script
-    wr     Modify WindRiver makefile to run on Linux
-    help   Show this message
+    py        Generate Linux makefile using python script
+    winpy     Generate Windows makefile using python script
+    wr        Modify WindRiver makefile to run on Linux
+    wpipy     Generate WPILib Linux makefile using python script
+    wpiwinpy  Generate WPILib Windows makefile using python script
+    help      Show this message
 EOF
 }
 
@@ -34,6 +36,16 @@ then
 	command="wr"
 fi
 
+if [ "x$1" = "xwpipy" ]
+then
+	command="wpipy"
+fi
+
+if [ "x$1" = "xwpiwinpy" ]
+then
+	command="wpiwinpy"
+fi
+
 if [ "$command" = "help" ]
 then
 	usage
@@ -42,7 +54,15 @@ fi
 
 ##### Load Configuration #####
 
-source ucpp-settings
+if [ -f ucpp-settings ]
+then
+	source ucpp-settings
+fi
+
+if [ -f `dirname $0`/ucpp-settings ]
+then
+	source `dirname $0`/ucpp-settings
+fi
 
 # Load project configuration, if it exists
 if [ -f .ucpp ]
@@ -170,4 +190,20 @@ then
 		echo "Generate the Makefile or use other configuration methods"
 		exit 66
 	fi
+fi
+
+if [ "$command" = "wpipy" ]
+then
+	echo -n "Manually generating WPILib Linux Makefile... "
+	mkdir -p PPC603gnu
+	python `dirname $0`/ucpp_gen_wpilib_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
+	echo "Done"
+fi
+
+if [ "$command" = "wpiwinpy" ]
+then
+	echo -n "Manually generating WPILib Windows Makefile... "
+	mkdir -p PPC603gnu
+	python `dirname $0`/ucpp_gen_wpilib_makefile.py > PPC603gnu/Makefile
+	echo "Done"
 fi

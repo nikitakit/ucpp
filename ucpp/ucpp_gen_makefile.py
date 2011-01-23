@@ -30,11 +30,7 @@ header_section = """
 # Makefile generated using Team 980's Makefile generation script
 # Do not edit!!!
 #
-# The file ".wrmakefile" is the template used by the Wind River Workbench to
-# generate the makefiles of this project. Add user-specific build targets and
-# make rules only(!) in this project's ".wrmakefile" file. These will then be
-# automatically dumped into the makefiles.
-"""[1:-1]
+"""[1:]
 
 #common config section (mostly variables)
 

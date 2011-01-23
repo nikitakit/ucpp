@@ -9,7 +9,7 @@
 # C:/ drive under Linux.
 export C_DRIVE=/media/sda2/
 
-# If using gccdist, set to the gccdist directory
+# If using gccdist, set C_DRIVE to the gccdist directory
 #export C_DRIVE=/home/nikita/frc-cpp-linux/gccdist/
 
 # Otherwise, just set to "C:/"
