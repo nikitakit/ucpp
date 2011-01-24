@@ -23,7 +23,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class SampleBuilder extends IncrementalProjectBuilder {
+public class UniversalCppBuilder extends IncrementalProjectBuilder {
 
 	class SampleDeltaVisitor implements IResourceDeltaVisitor {
 		/*
@@ -68,7 +68,7 @@ public class SampleBuilder extends IncrementalProjectBuilder {
 		}
 
 		private void addMarker(SAXParseException e, int severity) {
-			SampleBuilder.this.addMarker(file, e.getMessage(), e
+			UniversalCppBuilder.this.addMarker(file, e.getMessage(), e
 					.getLineNumber(), severity);
 		}
 
@@ -85,7 +85,7 @@ public class SampleBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	public static final String BUILDER_ID = "builder.sampleBuilder";
+	public static final String BUILDER_ID = "builder.universalCppBuilder";
 
 	private static final String MARKER_TYPE = "builder.xmlProblem";
 

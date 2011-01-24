@@ -2,13 +2,13 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         id="sampleBuilder"
-         name="Sample Project Builder"
+         id="universalCppBuilder"
+         name="Universal FRC C++ Builder"
          point="org.eclipse.core.resources.builders">
       <builder
             hasNature="true">
          <run
-               class="ucpp.builder.SampleBuilder">
+               class="ucpp.builder.UniversalCppBuilder">
          </run>
       </builder>
    </extension>
@@ -22,7 +22,7 @@
          </run>
       </runtime>
       <builder
-            id="builder.sampleBuilder">
+            id="builder.universalCppBuilder">
       </builder>
    </extension>
    <extension
@@ -36,7 +36,7 @@
                class="ucpp.builder.ToggleNatureAction"
                enablesFor="+"
                id="builder.addRemoveNatureAction"
-               label="Add Universal C++ Build target"
+               label="Build via Universal C++"
                menubarPath="additions">
          </action>
       </objectContribution>
