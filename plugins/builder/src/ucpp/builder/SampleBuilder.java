@@ -1,6 +1,7 @@
 package ucpp.builder;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -142,19 +144,22 @@ public class SampleBuilder extends IncrementalProjectBuilder {
 			try {
 				if (OSValidator.isUnix())
 				{
-//                Runtime rt = Runtime.getRuntime();
-//                Process pr = rt.exec("make it all");
-// 
-//                BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-// 
-//                String line=null;
-// 
-//                while((line=input.readLine()) != null) {
-//                    System.out.println(line);
-//                }
-// 
-//                int exitVal = pr.waitFor();
-//                System.out.println("Exited with error code "+exitVal);
+                Runtime rt = Runtime.getRuntime();
+                IProject pj = this.getProject();
+                IPath rl = pj.getLocation();
+                Process pr = rt.exec("ucpp configure py && make", null, rl.toFile());
+                
+ 
+                BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+ 
+                String line=null;
+ 
+                while((line=input.readLine()) != null) {
+                    System.out.println(line);
+                }
+ 
+                int exitVal = pr.waitFor();
+                System.out.println("Exited with error code "+exitVal);
 				}
 				else
 				{
