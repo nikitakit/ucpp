@@ -36,8 +36,19 @@
                class="ucpp.builder.ToggleNatureAction"
                enablesFor="+"
                id="builder.addRemoveNatureAction"
-               label="Build via Universal C++"
-               menubarPath="additions">
+               label="Mark as Universal FRC C++ Project"
+               menubarPath="builder.menu1/additions">
+         </action>
+         <menu
+               id="builder.menu1"
+               label="Universal C++ for FRC">
+         </menu>
+         <action
+               class="ucpp.builder.DeployToRobotAction"
+               enablesFor="+"
+               id="builder.deployToRobot"
+               label="Deploy to robot"
+               menubarPath="builder.menu1/additions">
          </action>
       </objectContribution>
    </extension>
