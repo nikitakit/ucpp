@@ -18,7 +18,6 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -145,9 +144,10 @@ public class SampleBuilder extends IncrementalProjectBuilder {
 				if (OSValidator.isUnix())
 				{
                 Runtime rt = Runtime.getRuntime();
-                IProject pj = this.getProject();
-                IPath rl = pj.getLocation();
-                Process pr = rt.exec("ucpp configure py && make", null, rl.toFile());
+                String path = System.getenv("PATH");
+                if (!path.contains("ucpp"))
+                	path = System.getenv("HOME")+"/ucpp/ucpp:"+path;
+                Process pr = rt.exec(new String[]{System.getenv("HOME")+"/ucpp/ucpp/ucpp", "configure", "py"}, new String[]{"PATH="+path}, this.getProject().getLocation().toFile());
                 
  
                 BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
