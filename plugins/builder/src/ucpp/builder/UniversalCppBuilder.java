@@ -141,7 +141,7 @@ public class UniversalCppBuilder extends IncrementalProjectBuilder {
 		try {
 			getProject().accept(new SampleResourceVisitor());
 			try {
-				if (OSValidator.isUnix())
+				if (OSValidator.isUnix()||OSValidator.isMac())
 				{
                 Runtime rt = Runtime.getRuntime();
                 String path = System.getenv("PATH");
@@ -160,6 +160,23 @@ public class UniversalCppBuilder extends IncrementalProjectBuilder {
  
                 int exitVal = pr.waitFor();
                 System.out.println("Exited with error code "+exitVal);
+				}
+				else if (OSValidator.isWindows())
+				{
+					Runtime rt = Runtime.getRuntime();
+	                Process pr = rt.exec("C:\\cygwin\\bin\\bash.exe --login -i -c \"ucpp configure winpy\"", null, this.getProject().getLocation().toFile());
+	                
+	 
+	                BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+	 
+	                String line=null;
+	 
+	                while((line=input.readLine()) != null) {
+	                    System.out.println(line);
+	                }
+	 
+	                int exitVal = pr.waitFor();
+	                System.out.println("Exited with error code "+exitVal);
 				}
 				else
 				{

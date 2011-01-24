@@ -59,9 +59,9 @@ then
 	source ucpp-settings
 fi
 
-if [ -f `dirname $0`/ucpp-settings ]
+if [ -f `dirname '$0'`/ucpp-settings ]
 then
-	source `dirname $0`/ucpp-settings
+	source `dirname '$0'`/ucpp-settings
 fi
 
 # Load project configuration, if it exists
@@ -173,7 +173,7 @@ if [ "$command" = "winpy" ]
 then
 	echo -n "Manually generating Windows Makefile... "
 	mkdir -p PPC603gnu
-	python `dirname $0`/ucpp_gen_makefile.py > PPC603gnu/Makefile
+	python "`dirname "$0"|sed 's_/cygdrive/c/_C:/_'`/ucpp_gen_makefile.py" > PPC603gnu/Makefile
 	echo "Done"
 fi
 
@@ -204,6 +204,6 @@ if [ "$command" = "wpiwinpy" ]
 then
 	echo -n "Manually generating WPILib Windows Makefile... "
 	mkdir -p PPC603gnu
-	python `dirname $0`/ucpp_gen_wpilib_makefile.py > PPC603gnu/Makefile
+	python `dirname '$0'`/ucpp_gen_wpilib_makefile.py > PPC603gnu/Makefile
 	echo "Done"
 fi

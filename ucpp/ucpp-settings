@@ -7,7 +7,7 @@
 
 # Under dual-boot Linux/Windows systems, set to the location of the
 # C:/ drive under Linux.
-export C_DRIVE=/media/sda2/
+export C_DRIVE=/cygdrive/c/
 
 # If using gccdist, set C_DRIVE to the gccdist directory
 #export C_DRIVE=/home/nikita/frc-cpp-linux/gccdist/
