@@ -2,6 +2,7 @@ package ucpp.builder;
 
 import java.util.Iterator;
 
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
@@ -43,8 +44,9 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
-	 *      org.eclipse.jface.viewers.ISelection)
+	 * @see
+	 * org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action
+	 * .IAction, org.eclipse.jface.viewers.ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
 		this.selection = selection;
@@ -53,8 +55,9 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.action.IAction,
-	 *      org.eclipse.ui.IWorkbenchPart)
+	 * @see
+	 * org.eclipse.ui.IObjectActionDelegate#setActivePart(org.eclipse.jface.
+	 * action.IAction, org.eclipse.ui.IWorkbenchPart)
 	 */
 	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 	}
@@ -79,7 +82,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 							natures.length - i - 1);
 					description.setNatureIds(newNatures);
 					project.setDescription(description, null);
-					return;
+					break;
 				}
 			}
 

@@ -11,7 +11,7 @@ public class SampleNature implements IProjectNature {
 	/**
 	 * ID of this project nature
 	 */
-	public static final String NATURE_ID = "ucpp.sampleNature";
+	public static final String NATURE_ID = "builder.sampleNature";
 
 	private IProject project;
 

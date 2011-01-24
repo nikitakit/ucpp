@@ -1,5 +1,7 @@
 package ucpp.builder;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -82,9 +84,9 @@ public class SampleBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	public static final String BUILDER_ID = "ucpp.sampleBuilder";
+	public static final String BUILDER_ID = "builder.sampleBuilder";
 
-	private static final String MARKER_TYPE = "ucpp.xmlProblem";
+	private static final String MARKER_TYPE = "builder.xmlProblem";
 
 	private SAXParserFactory parserFactory;
 
@@ -110,16 +112,7 @@ public class SampleBuilder extends IncrementalProjectBuilder {
 	 */
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor)
 			throws CoreException {
-		if (kind == FULL_BUILD) {
-			fullBuild(monitor);
-		} else {
-			IResourceDelta delta = getDelta(getProject());
-			if (delta == null) {
-				fullBuild(monitor);
-			} else {
-				incrementalBuild(delta, monitor);
-			}
-		}
+		fullBuild(monitor);
 		return null;
 	}
 
@@ -146,6 +139,32 @@ public class SampleBuilder extends IncrementalProjectBuilder {
 			throws CoreException {
 		try {
 			getProject().accept(new SampleResourceVisitor());
+			try {
+				if (OSValidator.isUnix())
+				{
+//                Runtime rt = Runtime.getRuntime();
+//                Process pr = rt.exec("make it all");
+// 
+//                BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+// 
+//                String line=null;
+// 
+//                while((line=input.readLine()) != null) {
+//                    System.out.println(line);
+//                }
+// 
+//                int exitVal = pr.waitFor();
+//                System.out.println("Exited with error code "+exitVal);
+				}
+				else
+				{
+					System.out.println("UNSUPPORTED SYSTEM!");
+				}
+ 
+            } catch(Exception e) {
+                System.out.println(e.toString());
+                e.printStackTrace();
+            }
 		} catch (CoreException e) {
 		}
 	}
