@@ -108,6 +108,9 @@ function modify_makefile() {
 	# Add environmental variables to Makefile
 	#    WIND_HOME, WIND_BASE, WIND_LIC_PROXY, LM_LICENSE_FILE
 
+	# Squash wine "fixme" errors
+	#    export WINEDEBUG=fixme-all
+
 	# Set the tool path (3 occurances)
 	#    TOOL_PATH = wine $COMPILER_DIR
 	# "wine" is part of the tool path because the tools are .exe files
@@ -125,7 +128,8 @@ function modify_makefile() {
 	sed "s|FILE_START|export WIND_HOME=$WIND_HOME\n&|" |\
 	sed "s|FILE_START|export WIND_BASE=$WIND_BASE\n&|" |\
 	sed "s|FILE_START|export WIND_LIC_PROXY=$WIND_LIC_PROXY\n&|" |\
-	sed "s|FILE_START|export LM_LICENSE_FILE=$LM_LICENSE_FILE\n|" |\
+	sed "s|FILE_START|export LM_LICENSE_FILE=$LM_LICENSE_FILE\n&|" |\
+	sed "s|FILE_START|export WINEDEBUG=fixme-all\n|" |\
 	\
 	sed "s|TOOL_PATH = |TOOL_PATH = wine $COMPILER_DIR/|g" |\
 	\
@@ -148,8 +152,7 @@ function add_deploy_target()
 # Custom targets inserted by ucpp
 
 deploy: \$(PROJECT_TARGETS)
-	ftp $DEPLOY_IP < $SCRIPT_INSTALL_DIR/delcode
-	wput $CPP_PROJECT_NAME/Debug/$CPP_PROJECT_NAME.out ftp://anonymous@$DEPLOY_IP/ni-rt/system/FRC_UserProgram.out
+	wput -u $CPP_PROJECT_NAME/Debug/$CPP_PROJECT_NAME.out ftp://anonymous@$DEPLOY_IP/ni-rt/system/FRC_UserProgram.out
 
 undeploy:
 	ftp $DEPLOY_IP < $SCRIPT_INSTALL_DIR/delcode
