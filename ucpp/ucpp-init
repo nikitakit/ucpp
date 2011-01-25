@@ -37,7 +37,7 @@ print "10.%i.%i.2\n" % (n//100, n%100)
 EOF
 )
 
-export CPP_PROJECT_WS_ROOT_DIR=$(dirname '`pwd`'| sed "s|$C_DRIVE|C:/|g")
+export CPP_PROJECT_WS_ROOT_DIR=$(dirname "`pwd`"| sed "s|$C_DRIVE|C:/|g")
 export CPP_PROJECT_ROOT_DIR=$(pwd | sed "s|$C_DRIVE|C:/|g")
 export CPP_PROJECT_NAME=$(basename `pwd`)
 
