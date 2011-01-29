@@ -1,0 +1,18 @@
+#! /bin/bash
+
+export HAVE_CPP_PROJECT=no 
+export SCRIPT_INSTALL_DIR=`dirname $0`
+
+
+if [ -f $HOME/.ucpp/settings ]
+then
+	source $HOME/.ucpp/settings
+else
+	echo "No settings found: run 'ucpp setup'"
+	exit 1
+fi
+
+if [ -f .ucpp ]
+then
+	source .ucpp
+fi

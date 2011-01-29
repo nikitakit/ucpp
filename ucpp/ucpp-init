@@ -28,7 +28,7 @@ then
 	exit 66
 fi
 
-source ucpp-settings
+source ucpp_settings
 
 DEPLOY_IP=$(python <<EOF 2>&1 | grep "10." 
 s="$@"

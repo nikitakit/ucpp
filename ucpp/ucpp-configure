@@ -54,20 +54,9 @@ fi
 
 ##### Load Configuration #####
 
-if [ -f ucpp-settings ]
+if [ -f `dirname "$0"`/ucpp_settings ]
 then
-	source ucpp-settings
-fi
-
-if [ -f `dirname "$0"`/ucpp-settings ]
-then
-	source `dirname "$0"`/ucpp-settings
-fi
-
-# Load project configuration, if it exists
-if [ -f .ucpp ]
-then
-	source .ucpp
+	source `dirname "$0"`/ucpp_settings
 fi
 
 # Anything other than "help" requires the current directory
