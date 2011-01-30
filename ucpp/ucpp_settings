@@ -1,8 +1,6 @@
 #! /bin/bash
 
 export HAVE_CPP_PROJECT=no 
-export SCRIPT_INSTALL_DIR=`dirname $0`
-
 
 if [ -f $HOME/.ucpp/settings ]
 then
@@ -16,3 +14,6 @@ if [ -f .ucpp ]
 then
 	source .ucpp
 fi
+
+export SCRIPT_INSTALL_DIR=`dirname $0`
+

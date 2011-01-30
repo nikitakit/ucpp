@@ -144,6 +144,7 @@ export DEPLOY_IP=$DEPLOY_IP
 #  Under dual-boot Linux/Windows systems, set to the location of the
 #  C:/ drive under Linux (e.g. /media/sda2/)
 #  In Cygwin, the C:/ drive is /cygdrive/c/
+#  Under MSYS, the C:/ drive is /c/
 #  If using gccdist, set C_DRIVE to the gccdist directory
 #  Otherwise, just set to "C:/"
 export C_DRIVE=$C_DRIVE
@@ -247,7 +248,49 @@ if [ "$command" = "windows-git" ]
 then
 	cat >>$HOME/.ucpp/settings <<'EOF'
 
-# add "make" command to PATH
-export PATH=$PATH:$COMPILER_DIR
+PYTHON="$C_DRIVE/Python27"
+# Use pre-existing python version, if there is one
+if [ "x`which python`" = "x" ]
+then
+	if [ "x`which $C_DRIVE/Python27/python.exe`" = "x" ]
+	then
+		echo "Python not found"
+		echo "Install python or add it to system PATH"
+		exit 1
+	else
+		PYTHON="$C_DRIVE/Python27"
+	fi
+else
+	PYTHON=$($C_DRIVE/WindRiver/workbench-3.0/x86-win32/bin/dirname "`which python`" | sed "s|[Cc]:/|$C_DRIVE|g") 
+fi
+
+
+# Use the WindRiver verion of all unix commands
+export OLD_PATH="$PATH"
+export PATH="$C_DRIVE/WindRiver/workbench-3.0/x86-win32/bin"
+export PATH="$PATH:$PYTHON"
 EOF
+
+	if [ "x`which make`" = "x" ]
+	then
+		echo "Some unix commands are missing"
+		echo -n "Add WindRiver commands to PATH via appending to .bashrc? (Y/n)"
+		read answer
+		a=yes
+		if [ "x$answer" = "xN" ]
+		then
+			a=no
+		fi
+		if [ "x$answer" = "xn" ]
+		then
+			a=no
+		fi
+		if [ "$a" = "yes" ]
+		then
+			source $HOME/.ucpp/settings
+			echo 'export PATH="$PATH:COMMANDS_DIR"' | \
+			sed -e "s|COMMANDS_DIR|$WIND_HOME/workbench-3.0/x86-win32/bin|" >> ~/.bashrc
+			echo ".bashrc updated; restart command prompt for changes to take effect"
+		fi
+	fi
 fi

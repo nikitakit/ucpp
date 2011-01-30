@@ -54,10 +54,8 @@ fi
 
 ##### Load Configuration #####
 
-if [ -f `dirname "$0"`/ucpp_settings ]
-then
-	source `dirname "$0"`/ucpp_settings
-fi
+source ucpp_settings
+
 
 # Anything other than "help" requires the current directory
 # to be configured as a C++ project
@@ -130,6 +128,20 @@ function modify_makefile() {
 
 }
 
+function modify_win_makefile()
+{
+	# Set environmental variables
+	sed 's|WIND_HOME :=|FILE_START%NEWLINE%&|' |\
+	sed "s|FILE_START|export WIND_HOME=$WIND_HOME%NEWLINE%&|" |\
+	sed "s|FILE_START|export WIND_BASE=$WIND_BASE%NEWLINE%&|" |\
+	sed "s|FILE_START|export WIND_LIC_PROXY=$WIND_LIC_PROXY%NEWLINE%&|" |\
+	sed "s|FILE_START|export LM_LICENSE_FILE=$LM_LICENSE_FILE%NEWLINE%|" |\
+	sed "s|%NEWLINE%|\\
+|g" |\
+	sed "s|TOOL_PATH = |TOOL_PATH = $COMPILER_DIR/|g" |\
+	cat
+}
+
 function add_deploy_target()
 {
 	if [ "x$DEPLOY_IP" = "x" ]
@@ -165,7 +177,7 @@ if [ "$command" = "winpy" ]
 then
 	echo -n "Manually generating Windows Makefile... "
 	mkdir -p PPC603gnu
-	python "`dirname "$0"|sed 's_/cygdrive/c/_C:/_'`/ucpp_gen_makefile.py" > PPC603gnu/Makefile
+	python "`dirname "$0" | sed "s|$C_DRIVE|C:/|"`/ucpp_gen_makefile.py" | modify_win_makefile > PPC603gnu/Makefile
 	echo "Done"
 fi
 
