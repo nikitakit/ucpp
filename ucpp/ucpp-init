@@ -106,6 +106,15 @@ then
 	rm PPC603gnu/Makefile_tmp
 fi
 
+if [ `uname` = "CYGWIN_NT-6.0" ]
+then
+	mv Makefile PPC603gnu/Makefile_tmp
+	cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" |\
+	sed -e 's/$(MAKE)/MAKE_CMD/' |\
+	sed -e "s|MAKE_CMD|$WIND_HOME/workbench-3.0/x86-win32/bin/make.exe|"> Makefile
+	rm PPC603gnu/Makefile_tmp
+fi
+
 # User diagnostics
 
 cat <<EOF

@@ -27,6 +27,10 @@ Command: linux-gccdist
     -b
         Update gccdist and/or recompile WPILib
 
+Command: windows-cygwin
+   -t <team-number>
+       Set default team number for deploying code
+
 Command: windows-git
   Set up a Windows build system that relies on WindRiver and
   MSYSgit
@@ -51,6 +55,12 @@ if [ "x$1" = "xlinux-gccdist" ]
 then
 	command=linux-gccdist
 	shift
+fi
+
+if [ "x$1" = "xwindows-cygwin" ]
+then
+	command=windows-cygwin
+	C_DRIVE=/cygdrive/c/
 fi
 
 if [ "x$1" = "xwindows-git" ]
