@@ -26,8 +26,18 @@ Command: linux-gccdist
         Set default team number for deploying code
     -b
         Update gccdist and/or recompile WPILib
+
+Command: windows-git
+  Set up a Windows build system that relies on WindRiver and
+  MSYSgit
+    -t <team-number>
+        Set default team number for deploying code
 EOF
 }
+
+C_DRIVE=
+DOWNLOAD_GCCDIST=no
+MAKE_WPILIB=no
 
 command=help
 
@@ -43,15 +53,18 @@ then
 	shift
 fi
 
+if [ "x$1" = "xwindows-git" ]
+then
+	command=windows-git
+	C_DRIVE=/c/
+	shift
+fi
+
 if [ "$command" = "help" ]
 then
 	usage
 	exit
 fi
-
-C_DRIVE=
-DOWNLOAD_GCCDIST=no
-MAKE_WPILIB=no
 
 while getopts "ht:c:ib" opt; do
 	case $opt in
@@ -230,3 +243,11 @@ then
 	make_wpilib
 fi
 
+if [ "$command" = "windows-git" ]
+then
+	cat >>$HOME/.ucpp/settings <<'EOF'
+
+# add "make" command to PATH
+export PATH=$PATH:$COMPILER_DIR
+EOF
+fi
