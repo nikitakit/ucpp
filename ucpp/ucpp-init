@@ -24,7 +24,7 @@ fi
 
 if [ -f .ucpp ]
 then
-	echo "ERROR: Project already exists"
+	echo "ERROR: Project already exists in `pwd`"
 	exit 66
 fi
 

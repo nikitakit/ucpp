@@ -50,6 +50,13 @@
                label="Deploy to robot"
                menubarPath="builder.menu1/additions">
          </action>
+         <action
+               class="ucpp.builder.InitializeAction"
+               enablesFor="+"
+               id="builder.init"
+               label="Initialize as Universal C++ project..."
+               menubarPath="builder.menu1/additions">
+         </action>
       </objectContribution>
    </extension>
    <extension
