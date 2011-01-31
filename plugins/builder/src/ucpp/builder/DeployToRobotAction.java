@@ -95,20 +95,13 @@ public class DeployToRobotAction implements IObjectActionDelegate
 			}
 			else if (OSValidator.isWindows())
 			{
-				Runtime rt = Runtime.getRuntime();
-				Process pr = rt.exec("C:\\cygwin\\bin\\bash.exe --login -i -c \"make deploy\"", null, project.getLocation().toFile());
-
-				BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-
-				String line = null;
-
-				while ((line = input.readLine()) != null)
-				{
-					System.out.println(line);
-				}
-
-				int exitVal = pr.waitFor();
-				System.out.println("Exited with error code " + exitVal);
+				int team = 451;//TODO: remove this hard code
+				FileTransferClient ftp = new FileTransferClient();
+				ftp.setRemoteHost("10."+(team/100)+"."+(team%100)+".2");
+				ftp.connect();
+				//(project)/PPC603gnu/projectname/Debug/?
+				ftp.uploadFile(project.getLocation().toString()+"/PPC603gnu/"+project.getName()+"/Debug/"+project.getName()+".out", "/ni-rt/system/FRC_UserProgram.out");
+				ftp.disconnect();
 			}
 			else
 			{
