@@ -92,5 +92,19 @@
          </action>
       </actionSet>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="ucpp.builder.UCppPreferences"
+            id="ucpp.builder.UCppPreferences"
+            name="FIRST Downloader Preferences (Universal C++)">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="ucpp.builder.PreferenceInitializer">
+      </initializer>
+   </extension>
 
 </plugin>
