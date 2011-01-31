@@ -28,16 +28,16 @@ then
 	exit 66
 fi
 
-source ucpp-settings
+source ucpp_settings
 
-DEPLOY_IP=$(python <<EOF 2>&1 | grep "10." 
+DEPLOY_IP=$(python <<EOF 2>&1 | grep "10."
 s="$@"
 n=int(s.split("-t")[1])
 print "10.%i.%i.2\n" % (n//100, n%100)
 EOF
 )
 
-export CPP_PROJECT_WS_ROOT_DIR=$(dirname '`pwd`'| sed "s|$C_DRIVE|C:/|g")
+export CPP_PROJECT_WS_ROOT_DIR=$(dirname "`pwd`"| sed "s|$C_DRIVE|C:/|g")
 export CPP_PROJECT_ROOT_DIR=$(pwd | sed "s|$C_DRIVE|C:/|g")
 export CPP_PROJECT_NAME=$(basename `pwd`)
 
@@ -86,7 +86,7 @@ cat >Makefile <<'EOF'
 
 # For the default target, use the WindRiver makefile
 all: force
-	cd PPC603gnu && exec $(MAKE) -f Makefile_linux "$@"
+	cd PPC603gnu && exec $(MAKE) -f Makefile_linux
 
 # TODO: insert targets that download gcc and WPIlib
 
@@ -98,6 +98,22 @@ force: ;
 
 EOF
 
+# On Windows, don't use the Linux Makefile
+if [ `uname` = "windows32" ]
+then
+	mv Makefile PPC603gnu/Makefile_tmp
+	cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" > Makefile
+	rm PPC603gnu/Makefile_tmp
+fi
+
+if [ `uname` = "CYGWIN_NT-6.0" ]
+then
+	mv Makefile PPC603gnu/Makefile_tmp
+	cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" |\
+	sed -e 's/$(MAKE)/MAKE_CMD/' |\
+	sed -e "s|MAKE_CMD|$WIND_HOME/workbench-3.0/x86-win32/bin/make.exe|"> Makefile
+	rm PPC603gnu/Makefile_tmp
+fi
 
 # User diagnostics
 

@@ -54,21 +54,8 @@ fi
 
 ##### Load Configuration #####
 
-if [ -f ucpp-settings ]
-then
-	source ucpp-settings
-fi
+source ucpp_settings
 
-if [ -f `dirname '$0'`/ucpp-settings ]
-then
-	source `dirname '$0'`/ucpp-settings
-fi
-
-# Load project configuration, if it exists
-if [ -f .ucpp ]
-then
-	source .ucpp
-fi
 
 # Anything other than "help" requires the current directory
 # to be configured as a C++ project
@@ -108,6 +95,9 @@ function modify_makefile() {
 	# Add environmental variables to Makefile
 	#    WIND_HOME, WIND_BASE, WIND_LIC_PROXY, LM_LICENSE_FILE
 
+	# Squash wine "fixme" errors
+	#    export WINEDEBUG=fixme-all
+
 	# Set the tool path (3 occurances)
 	#    TOOL_PATH = wine $COMPILER_DIR
 	# "wine" is part of the tool path because the tools are .exe files
@@ -125,7 +115,8 @@ function modify_makefile() {
 	sed "s|FILE_START|export WIND_HOME=$WIND_HOME\n&|" |\
 	sed "s|FILE_START|export WIND_BASE=$WIND_BASE\n&|" |\
 	sed "s|FILE_START|export WIND_LIC_PROXY=$WIND_LIC_PROXY\n&|" |\
-	sed "s|FILE_START|export LM_LICENSE_FILE=$LM_LICENSE_FILE\n|" |\
+	sed "s|FILE_START|export LM_LICENSE_FILE=$LM_LICENSE_FILE\n&|" |\
+	sed "s|FILE_START|export WINEDEBUG=fixme-all\n|" |\
 	\
 	sed "s|TOOL_PATH = |TOOL_PATH = wine $COMPILER_DIR/|g" |\
 	\
@@ -135,6 +126,20 @@ function modify_makefile() {
 	\
 	sed 's|-include $(DEP_FILES)|##DEP_FILES not used on Linux##|g'
 
+}
+
+function modify_win_makefile()
+{
+	# Set environmental variables
+	sed 's|WIND_HOME :=|FILE_START%NEWLINE%&|' |\
+	sed "s|FILE_START|export WIND_HOME=$WIND_HOME%NEWLINE%&|" |\
+	sed "s|FILE_START|export WIND_BASE=$WIND_BASE%NEWLINE%&|" |\
+	sed "s|FILE_START|export WIND_LIC_PROXY=$WIND_LIC_PROXY%NEWLINE%&|" |\
+	sed "s|FILE_START|export LM_LICENSE_FILE=$LM_LICENSE_FILE%NEWLINE%|" |\
+	sed "s|%NEWLINE%|\\
+|g" |\
+	sed "s|TOOL_PATH = |TOOL_PATH = $COMPILER_DIR/|g" |\
+	cat
 }
 
 function add_deploy_target()
@@ -148,8 +153,7 @@ function add_deploy_target()
 # Custom targets inserted by ucpp
 
 deploy: \$(PROJECT_TARGETS)
-	ftp $DEPLOY_IP < $SCRIPT_INSTALL_DIR/delcode
-	wput $CPP_PROJECT_NAME/Debug/$CPP_PROJECT_NAME.out ftp://anonymous@$DEPLOY_IP/ni-rt/system/FRC_UserProgram.out
+	wput -u $CPP_PROJECT_NAME/Debug/$CPP_PROJECT_NAME.out ftp://anonymous@$DEPLOY_IP/ni-rt/system/FRC_UserProgram.out
 
 undeploy:
 	ftp $DEPLOY_IP < $SCRIPT_INSTALL_DIR/delcode
@@ -173,7 +177,7 @@ if [ "$command" = "winpy" ]
 then
 	echo -n "Manually generating Windows Makefile... "
 	mkdir -p PPC603gnu
-	python "`dirname "$0"|sed 's_/cygdrive/c/_C:/_'`/ucpp_gen_makefile.py" > PPC603gnu/Makefile
+	python "`dirname "$0" | sed "s|$C_DRIVE|C:/|"`/ucpp_gen_makefile.py" | modify_win_makefile > PPC603gnu/Makefile
 	echo "Done"
 fi
 
@@ -196,7 +200,7 @@ if [ "$command" = "wpipy" ]
 then
 	echo -n "Manually generating WPILib Linux Makefile... "
 	mkdir -p PPC603gnu
-	python `dirname $0`/ucpp_gen_wpilib_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
+	python `dirname "$0"`/ucpp_gen_wpilib_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
 	echo "Done"
 fi
 
@@ -204,6 +208,6 @@ if [ "$command" = "wpiwinpy" ]
 then
 	echo -n "Manually generating WPILib Windows Makefile... "
 	mkdir -p PPC603gnu
-	python `dirname '$0'`/ucpp_gen_wpilib_makefile.py > PPC603gnu/Makefile
+	python `dirname "$0"`/ucpp_gen_wpilib_makefile.py > PPC603gnu/Makefile
 	echo "Done"
 fi

@@ -1,0 +1,306 @@
+#! /bin/bash
+
+usage()
+{
+	cat <<EOF
+Usage: ucpp setup COMMAND [options]
+
+Command: help, -h, --help
+  Show this message
+
+Command: linux-windriver
+  Set up Linux system that relies on an existing WindRiver or
+  gccdist install
+Options:
+    -c <path-to-c-drive>
+        Set the path equivalent to the C:/ drive
+        (the parent directory of the WindRiver folder)
+        NOTE: requires trailing slash (/)
+    -t <team-number>
+        Set default team number for deploying code
+
+Command: linux-gccdist
+    -i
+        Install Linux/gccdist platform
+    -t <team-number>
+        Set default team number for deploying code
+    -b
+        Update gccdist and/or recompile WPILib
+
+Command: windows-cygwin
+   -t <team-number>
+       Set default team number for deploying code
+
+Command: windows-git
+  Set up a Windows build system that relies on WindRiver and
+  MSYSgit
+    -t <team-number>
+        Set default team number for deploying code
+EOF
+}
+
+C_DRIVE=
+DOWNLOAD_GCCDIST=no
+MAKE_WPILIB=no
+
+command=help
+
+if [ "x$1" = "xlinux-windriver" ]
+then
+	command=linux-windriver
+	shift
+fi
+
+if [ "x$1" = "xlinux-gccdist" ]
+then
+	command=linux-gccdist
+	shift
+fi
+
+if [ "x$1" = "xwindows-cygwin" ]
+then
+	command=windows-cygwin
+	C_DRIVE=/cygdrive/c/
+fi
+
+if [ "x$1" = "xwindows-git" ]
+then
+	command=windows-git
+	C_DRIVE=/c/
+	shift
+fi
+
+if [ "$command" = "help" ]
+then
+	usage
+	exit
+fi
+
+while getopts "ht:c:ib" opt; do
+	case $opt in
+		h)
+			usage
+			exit
+			;;
+		t)
+			DEPLOY_IP=$(python <<EOF 2>&1 | grep "10." 
+n=int("$OPTARG")
+print "10.%i.%i.2\n" % (n//100, n%100)
+EOF
+			)
+			if [ "x$DEPLOY_IP" = "x" ]
+			then
+				echo "Invalid team number"
+				exit 1
+			fi
+			;;
+		c)
+			C_DRIVE=$OPTARG
+			;;
+		i)
+			C_DRIVE=$HOME/.ucpp/gccdist/
+			MAKE_WPILIB=yes
+			;;
+		b)
+			MAKE_WPILIB=yes
+			;;
+		\?)
+			echo "Invalid option: -$OPTARG" >&2
+			usage >&2
+			exit 1
+			;;
+		:)
+			echo "Option -$OPTARG requires an argument." >&2
+			usage >&2
+			exit 1
+			;;
+	esac
+done
+
+
+gen_settings()
+{
+if [ -f $HOME/.ucpp/settings ]
+then
+	echo -n "UCPP user settings already exist. Overwrite? (y/N)"
+	read answer
+	a=no
+	if [ "x$answer" = "xy" ]
+	then
+		a=yes
+	fi
+	if [ "x$answer" = "xY" ]
+	then
+		a=yes
+	fi
+	if [ "$a" = "no" ]
+	then
+		exit
+	fi
+fi
+
+mkdir -p $HOME/.ucpp
+
+cat >$HOME/.ucpp/settings <<EOF
+#! /bin/bash
+#  Also read by GNU make - use only variable defs here
+
+##### Global ucpp settings #####
+
+# Robot IP to deploy code to
+export DEPLOY_IP=$DEPLOY_IP
+
+# The location of the C:/ drive
+#  Under dual-boot Linux/Windows systems, set to the location of the
+#  C:/ drive under Linux (e.g. /media/sda2/)
+#  In Cygwin, the C:/ drive is /cygdrive/c/
+#  Under MSYS, the C:/ drive is /c/
+#  If using gccdist, set C_DRIVE to the gccdist directory
+#  Otherwise, just set to "C:/"
+export C_DRIVE=$C_DRIVE
+EOF
+
+cat >>$HOME/.ucpp/settings <<'EOF'
+
+export WIND_HOME=$C_DRIVE/WindRiver
+export WIND_BASE=$WIND_HOME/vxworks-6.3
+export WIND_LIC_PROXY=$WIND_HOME/setup/x86-win32/bin/
+export LM_LICENSE_FILE=$WIND_HOME/license/zwrsLicense.lic
+export COMPILER_DIR=$WIND_HOME/gnu/3.4.4-vxworks-6.3/x86-win32/bin
+
+
+
+# Default configure method for "ucpp configure"
+#   Possible values: py, winpy, wr
+# Leave blank to print a help message
+DEFAULT_CONFIGURE_COMMAND=
+EOF
+}
+
+make_wpilib()
+{
+if [ -d "$HOME/.ucpp" ]
+then
+	:
+else
+	echo "ERROR: gccdist+WPILib not yet installed"
+	exit 66
+fi
+
+SCRIPT_INSTALL_DIR=`dirname "$0"`
+MAKE='$(MAKE)'
+cat >$HOME/.ucpp/Makefile_gccdist <<EOF
+include settings
+
+wpilib: build-wpilib
+	mkdir -p gccdist/WindRiver/vxworks-6.3/target/lib
+	cp gccdist/WindRiver/vxworks-6.3/target/h/WPILib/PPC603gnu/WPILib/Debug/WPILib.a gccdist/WindRiver/vxworks-6.3/target/lib
+
+build-wpilib: gccdist/WindRiver/vxworks-6.3/target/h/WPILib
+	cd gccdist/WindRiver/vxworks-6.3/target/h/WPILib && $SCRIPT_INSTALL_DIR/ucpp-init && $SCRIPT_INSTALL_DIR/ucpp-configure wpipy && cd PPC603gnu && exec $MAKE -f Makefile_linux
+
+clean-project:
+	rm -f gccdist/WindRiver/vxworks-6.3/target/h/WPILib/.ucpp
+
+gccdist: gccdist.zip
+	unzip -oDDqq gccdist.zip -d .
+	mkdir -p gccdist/WindRiver/license
+	cp gccdist/supp/zwrsLicense.lic gccdist/WindRiver/license/zwrsLicense.lic
+
+
+gccdist.zip:
+	wget ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip -O gccdist.zip
+
+gccdist/WindRiver/WPILib/WPILibC++Source20110106rev2242.zip: gccdist
+	mkdir -p gccdist/WindRiver/WPILib
+	wget http://team3021.com/files/programming/WPILibC++Source20110106rev2242.zip -O gccdist/WindRiver/WPILib/WPILibC++Source20110106rev2242.zip 
+
+gccdist/WindRiver/vxworks-6.3/target/h/WPILib: gccdist/WindRiver/WPILib/WPILibC++Source20110106rev2242.zip
+	unzip -oDDqq gccdist/WindRiver/WPILib/WPILibC++Source20110106rev2242.zip -d gccdist/WindRiver/vxworks-6.3/target/h || [ -d gccdist/WindRiver/WPILib ]
+
+EOF
+
+cd $HOME/.ucpp
+
+echo "Downloading gccdist+WPILib and compiling WPILib..."
+make -f Makefile_gccdist clean-project
+make -f Makefile_gccdist -j2
+}
+
+
+
+if [ "x$C_DRIVE" = "x" ]
+then
+	if [ "$command" = "linux-windriver" ]
+	then
+		echo "Please specify path to C:/ drive"
+		exit 1
+	fi
+	if [ "$command" = "linux-gccdist" ]
+	then
+		if [ "$MAKE_WPILIB" = "no" ]
+		then
+			echo "Specify either '-i' or '-b'"
+			exit 1
+		fi
+	fi
+else
+	gen_settings
+fi
+
+
+if [ "$MAKE_WPILIB" = "yes" ]
+then
+	make_wpilib
+fi
+
+if [ "$command" = "windows-git" ]
+then
+	cat >>$HOME/.ucpp/settings <<'EOF'
+
+PYTHON="$C_DRIVE/Python27"
+# Use pre-existing python version, if there is one
+if [ "x`which python`" = "x" ]
+then
+	if [ "x`which $C_DRIVE/Python27/python.exe`" = "x" ]
+	then
+		echo "Python not found"
+		echo "Install python or add it to system PATH"
+		exit 1
+	else
+		PYTHON="$C_DRIVE/Python27"
+	fi
+else
+	PYTHON=$($C_DRIVE/WindRiver/workbench-3.0/x86-win32/bin/dirname "`which python`" | sed "s|[Cc]:/|$C_DRIVE|g") 
+fi
+
+
+# Use the WindRiver verion of all unix commands
+export OLD_PATH="$PATH"
+export PATH="$C_DRIVE/WindRiver/workbench-3.0/x86-win32/bin"
+export PATH="$PATH:$PYTHON"
+EOF
+
+	if [ "x`which make`" = "x" ]
+	then
+		echo "Some unix commands are missing"
+		echo -n "Add WindRiver commands to PATH via appending to .bashrc? (Y/n)"
+		read answer
+		a=yes
+		if [ "x$answer" = "xN" ]
+		then
+			a=no
+		fi
+		if [ "x$answer" = "xn" ]
+		then
+			a=no
+		fi
+		if [ "$a" = "yes" ]
+		then
+			source $HOME/.ucpp/settings
+			echo 'export PATH="$PATH:COMMANDS_DIR"' | \
+			sed -e "s|COMMANDS_DIR|$WIND_HOME/workbench-3.0/x86-win32/bin|" >> ~/.bashrc
+			echo ".bashrc updated; restart command prompt for changes to take effect"
+		fi
+	fi
+fi
