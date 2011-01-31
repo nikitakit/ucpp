@@ -81,8 +81,7 @@ public class Activator extends AbstractUIPlugin
 	
 	public static int GetTeamNumber()
 	{
-		int r = 451;//TODO: change to a setting
-		return r;
+		return getDefault().getPreferenceStore().getInt("Team Number");
 	}
 
 	public static String GetFileContents(String fileName)
@@ -129,8 +128,7 @@ public class Activator extends AbstractUIPlugin
 
 	public static String GetDefaultFile()
 	{
-		// TODO Auto-generated method stub
-		return "C:\\frc.out";//TODO: change to a setting
+		return getDefault().getPreferenceStore().getString("File");
 	}
 
 }
