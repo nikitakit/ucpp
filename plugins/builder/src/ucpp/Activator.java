@@ -78,6 +78,12 @@ public class Activator extends AbstractUIPlugin
 		r += Integer.valueOf(m.group(2));
 		return r;
 	}
+	
+	public static int GetTeamNumber()
+	{
+		int r = 451;//TODO: change to a setting
+		return r;
+	}
 
 	public static String GetFileContents(String fileName)
 	{
@@ -119,6 +125,12 @@ public class Activator extends AbstractUIPlugin
 		}
 
 		return contents.toString();
+	}
+
+	public static String GetDefaultFile()
+	{
+		// TODO Auto-generated method stub
+		return "C:\\frc.out";//TODO: change to a setting
 	}
 
 }

@@ -14,6 +14,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+import ucpp.utils.Uploader;
+
 import com.enterprisedt.net.ftp.FileTransferClient;
 
 public class DeployToRobotAction implements IObjectActionDelegate
@@ -76,14 +78,8 @@ public class DeployToRobotAction implements IObjectActionDelegate
 	{
 		try
 		{
-			int team = ucpp.Activator.GetTeamNumber(project);// TODO: remove this hard code
-			System.out.println(team);
-			FileTransferClient ftp = new FileTransferClient();
-			ftp.setRemoteHost("10." + (team / 100) + "." + (team % 100) + ".2");
-			ftp.connect();
-			// (project)/PPC603gnu/projectname/Debug/projectname.out
-			ftp.uploadFile(project.getLocation().toString() + "/PPC603gnu/" + project.getName() + "/Debug/" + project.getName() + ".out", "/ni-rt/system/FRC_UserProgram.out");
-			ftp.disconnect();
+			int team = ucpp.Activator.GetTeamNumber(project);
+			Uploader.Upload(project.getLocation().toString() + "/PPC603gnu/" + project.getName() + "/Debug/" + project.getName() + ".out", team);
 		}
 		catch (Exception e)
 		{

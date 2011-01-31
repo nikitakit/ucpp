@@ -1,10 +1,17 @@
 package ucpp.builder;
 
+import java.io.IOException;
+
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.jface.dialogs.MessageDialog;
+
+import com.enterprisedt.net.ftp.FTPException;
+
+import ucpp.Activator;
+import ucpp.utils.Uploader;
 
 /**
  * Our sample action implements workbench action delegate. The action proxy will
@@ -33,7 +40,14 @@ public class UndeployAction implements IWorkbenchWindowActionDelegate
 	 */
 	public void run(IAction action)
 	{
-		MessageDialog.openInformation(window.getShell(), "Builder", "TODO");
+		try
+		{
+			Uploader.Delete(Activator.GetTeamNumber());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**

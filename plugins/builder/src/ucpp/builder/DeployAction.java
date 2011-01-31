@@ -6,6 +6,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 
+import ucpp.Activator;
+import ucpp.utils.Uploader;
+
 public class DeployAction implements IWorkbenchWindowActionDelegate
 {
 	private IWorkbenchWindow window;
@@ -25,7 +28,14 @@ public class DeployAction implements IWorkbenchWindowActionDelegate
 	 */
 	public void run(IAction action)
 	{
-		MessageDialog.openInformation(window.getShell(), "Builder", "TODO Deploy");
+		try
+		{
+			Uploader.Upload(Activator.GetDefaultFile(), Activator.GetTeamNumber());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**
