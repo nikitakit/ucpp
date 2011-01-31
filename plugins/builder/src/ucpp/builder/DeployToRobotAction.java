@@ -14,6 +14,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+import com.enterprisedt.net.ftp.FileTransferClient;
+
 public class DeployToRobotAction implements IObjectActionDelegate
 {
 	private ISelection selection;
