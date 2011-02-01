@@ -102,7 +102,7 @@ public class InitializeAction implements IObjectActionDelegate
 			else if (OSValidator.isWindows())
 			{
 				Runtime rt = Runtime.getRuntime();
-				Process pr = rt.exec("C:\\cygwin\\bin\\bash.exe --login -i -c 'cd \""+project.getLocation().toFile()+"\"; ucpp setup windows-cygwin -t "+String.valueOf(team)+"'", null, project.getLocation().toFile());
+				Process pr = rt.exec("C:\\cygwin\\bin\\bash.exe --login -i -c 'cd \""+project.getLocation().toFile()+"\"; ucpp init -t "+String.valueOf(team)+"'", null, project.getLocation().toFile());
 
 				BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 
