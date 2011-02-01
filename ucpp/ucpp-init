@@ -39,7 +39,7 @@ EOF
 
 export CPP_PROJECT_WS_ROOT_DIR=$(dirname "`pwd`"| sed "s|$C_DRIVE|C:/|g")
 export CPP_PROJECT_ROOT_DIR=$(pwd | sed "s|$C_DRIVE|C:/|g")
-export CPP_PROJECT_NAME=$(basename `pwd`)
+export CPP_PROJECT_NAME=$(basename "`pwd`")
 
 # Project settings (for ucpp-configure)
 
@@ -76,7 +76,7 @@ if [ -f .wrmakefile ]
 then
 	:
 else
-	cp $SCRIPT_INSTALL_DIR/.wrmakefile .
+	cp "$SCRIPT_INSTALL_DIR/.wrmakefile" .
 fi
 
 # Create a default Makefile here

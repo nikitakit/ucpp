@@ -2,9 +2,9 @@
 
 export HAVE_CPP_PROJECT=no 
 
-if [ -f $HOME/.ucpp/settings ]
+if [ -f "$HOME/.ucpp/settings" ]
 then
-	source $HOME/.ucpp/settings
+	source "$HOME/.ucpp/settings"
 else
 	echo "No settings found: run 'ucpp setup'"
 	exit 1
@@ -15,5 +15,5 @@ then
 	source .ucpp
 fi
 
-export SCRIPT_INSTALL_DIR=`dirname $0`
+export SCRIPT_INSTALL_DIR=`dirname "$0"`
 
