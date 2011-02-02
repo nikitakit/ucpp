@@ -50,6 +50,13 @@
                label="Deploy to robot"
                menubarPath="builder.menu1/additions">
          </action>
+         <action
+               class="ucpp.builder.InitializeAction"
+               enablesFor="+"
+               id="builder.init"
+               label="Initialize as Universal C++ project..."
+               menubarPath="builder.menu1/additions">
+         </action>
       </objectContribution>
    </extension>
    <extension
@@ -62,6 +69,49 @@
       <persistent
             value="true">
       </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="builder.actionSet"
+            label="FIRSTSet"
+            visible="true">
+         <menu
+               id="FIRSTbar"
+               label="FIRST">
+            <groupMarker
+                  name="stuff">
+            </groupMarker>
+         </menu>
+         <action
+               class="ucpp.builder.UndeployAction"
+               id="builder.builder.UndeployAction"
+               label="Undeploy"
+               menubarPath="FIRSTbar/stuff"
+               tooltip="Undeploy the code from the robot">
+         </action>
+         <action
+               class="ucpp.builder.DeployAction"
+               id="builder.builder.deployAction"
+               label="Deploy"
+               menubarPath="FIRSTbar/stuff"
+               tooltip="Deploy the code from the robot">
+         </action>
+      </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="ucpp.builder.UCppPreferences"
+            id="ucpp.builder.UCppPreferences"
+            name="FIRST Downloader Preferences (Universal C++)">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="ucpp.builder.PreferenceInitializer">
+      </initializer>
    </extension>
 
 </plugin>

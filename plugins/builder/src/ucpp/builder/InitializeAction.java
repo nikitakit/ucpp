@@ -18,7 +18,7 @@ import ucpp.utils.Uploader;
 
 import com.enterprisedt.net.ftp.FileTransferClient;
 
-public class DeployToRobotAction implements IObjectActionDelegate
+public class InitializeAction implements IObjectActionDelegate
 {
 	private ISelection selection;
 
@@ -45,7 +45,7 @@ public class DeployToRobotAction implements IObjectActionDelegate
 				}
 				if (project != null)
 				{
-					deploy(project);
+					init(project);
 				}
 			}
 		}
@@ -74,12 +74,53 @@ public class DeployToRobotAction implements IObjectActionDelegate
 	{
 	}
 
-	private void deploy(IProject project)
+	private void init(IProject project)
 	{
 		try
 		{
-			int team = ucpp.Activator.GetTeamNumber(project);
-			Uploader.Upload(project.getLocation().toString() + "/PPC603gnu/" + project.getName() + "/Debug/" + project.getName() + ".out", team);
+			int team = ucpp.Activator.GetTeamNumber();
+			if (OSValidator.isUnix() || OSValidator.isMac())
+			{
+				Runtime rt = Runtime.getRuntime();
+				String path = System.getenv("PATH");
+				if (!path.contains("ucpp"))
+					path = System.getenv("HOME") + "/ucpp/ucpp:" + path;
+				Process pr = rt.exec(new String[] { System.getenv("HOME") + "/ucpp/ucpp/ucpp", "init", "-t", String.valueOf(team) }, new String[] { "PATH=" + path }, project.getLocation().toFile());
+
+				BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+
+				String line = null;
+
+				while ((line = input.readLine()) != null)
+				{
+					System.out.println(line);
+				}
+
+				int exitVal = pr.waitFor();
+				System.out.println("Exited with error code " + exitVal);
+			}
+			else if (OSValidator.isWindows())
+			{
+				Runtime rt = Runtime.getRuntime();
+				Process pr = rt.exec("C:\\cygwin\\bin\\bash.exe --login -i -c 'cd \""+project.getLocation().toFile()+"\"; ucpp setup windows-cygwin -t "+String.valueOf(team)+"'", null, project.getLocation().toFile());
+
+				BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+
+				String line = null;
+
+				while ((line = input.readLine()) != null)
+				{
+					System.out.println(line);
+				}
+
+				int exitVal = pr.waitFor();
+				System.out.println("Exited with error code " + exitVal);
+			}
+			else
+			{
+				System.out.println("UNSUPPORTED SYSTEM!");
+			}
+
 		}
 		catch (Exception e)
 		{

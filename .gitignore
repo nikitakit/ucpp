@@ -2,4 +2,5 @@
 /plugins/.metadata
 /plugins/builder/bin
 /plugins/builder/.settings
+/plugins/UcppLibs/.settings
 /runtime-EclipseApplication

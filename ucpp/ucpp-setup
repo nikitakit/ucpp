@@ -120,7 +120,7 @@ done
 
 gen_settings()
 {
-if [ -f $HOME/.ucpp/settings ]
+if [ -f "$HOME/.ucpp/settings" ]
 then
 	echo -n "UCPP user settings already exist. Overwrite? (y/N)"
 	read answer
@@ -139,9 +139,9 @@ then
 	fi
 fi
 
-mkdir -p $HOME/.ucpp
+mkdir -p "$HOME/.ucpp"
 
-cat >$HOME/.ucpp/settings <<EOF
+cat >"$HOME/.ucpp/settings" <<EOF
 #! /bin/bash
 #  Also read by GNU make - use only variable defs here
 
@@ -160,7 +160,7 @@ export DEPLOY_IP=$DEPLOY_IP
 export C_DRIVE=$C_DRIVE
 EOF
 
-cat >>$HOME/.ucpp/settings <<'EOF'
+cat >>"$HOME/.ucpp/settings" <<'EOF'
 
 export WIND_HOME=$C_DRIVE/WindRiver
 export WIND_BASE=$WIND_HOME/vxworks-6.3
