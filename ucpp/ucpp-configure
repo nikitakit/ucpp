@@ -162,6 +162,32 @@ EOF
 	fi
 }
 
+function add_deploy_target_no_wput()
+{
+	if [ "x$DEPLOY_IP" = "x" ]
+	then
+		:
+	else
+        cat > PPC603gnu/deploy_code_script <<EOF 
+cd /
+cd ni-rt
+cd system
+put $CPP_PROJECT_NAME/Debug/$CPP_PROJECT_NAME.out FRC_UserProgram.out
+EOF
+		cat <<EOF
+
+# Custom targets inserted by ucpp
+
+deploy: \$(PROJECT_TARGETS)
+	ftp $DEPLOY_IP < deploy_code_script
+
+undeploy:
+	ftp $DEPLOY_IP < $SCRIPT_INSTALL_DIR/delcode
+
+EOF
+	fi
+}
+
 ##### Makefile generation commands #####
 
 if [ "$command" = "py" ]
@@ -178,6 +204,7 @@ then
 	echo -n "Manually generating Windows Makefile... "
 	mkdir -p PPC603gnu
 	python "`dirname "$0" | sed "s|$C_DRIVE|C:/|"`/ucpp_gen_makefile.py" | modify_win_makefile > PPC603gnu/Makefile
+	add_deploy_target_no_wput >> PPC603gnu/Makefile
 	echo "Done"
 fi
 
