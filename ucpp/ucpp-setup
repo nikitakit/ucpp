@@ -164,9 +164,8 @@ export COMPILER_DIR=$WIND_HOME/gnu/3.4.4-vxworks-6.3/x86-win32/bin
 
 
 # Default configure method for "ucpp configure"
-#   Possible values: py, winpy, wr
-# Leave blank to print a help message
-DEFAULT_CONFIGURE_COMMAND=
+#   Possible values: py, winpy, wr, help
+# If left blank, a help message will be shown
 EOF
 }
 
@@ -241,6 +240,12 @@ else
 	gen_settings
 fi
 
+if [ "$command" = "linux-windriver" ] || [ "$command" = "linux-gccdist" ]
+then
+	cat >>"$HOME/.ucpp/settings" <<EOF
+DEFAULT_CONFIGURE_COMMAND=py
+EOF
+fi
 
 if [ "$MAKE_WPILIB" = "yes" ]
 then
@@ -249,7 +254,8 @@ fi
 
 if [ "$command" = "windows-git" ]
 then
-	cat >>$HOME/.ucpp/settings <<'EOF'
+	cat >>"$HOME/.ucpp/settings" <<'EOF'
+DEFAULT_CONFIGURE_COMMAND=winpy
 
 PYTHON="$C_DRIVE/Python27"
 # Use pre-existing python version, if there is one
