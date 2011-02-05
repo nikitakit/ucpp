@@ -124,17 +124,10 @@ if [ -f "$HOME/.ucpp/settings" ]
 then
 	echo -n "UCPP user settings already exist. Overwrite? (y/N)"
 	read answer
-	a=no
-	if [ "x$answer" = "xy" ]
+	if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]
 	then
-		a=yes
-	fi
-	if [ "x$answer" = "xY" ]
-	then
-		a=yes
-	fi
-	if [ "$a" = "no" ]
-	then
+		:
+	else
 		exit
 	fi
 fi
@@ -287,16 +280,10 @@ EOF
 		echo -n "Add WindRiver commands to PATH via appending to .bashrc? (Y/n)"
 		read answer
 		a=yes
-		if [ "x$answer" = "xN" ]
+		if [ "x$answer" = "xN" ] || [ "x$answer" = "xn" ]
 		then
-			a=no
-		fi
-		if [ "x$answer" = "xn" ]
-		then
-			a=no
-		fi
-		if [ "$a" = "yes" ]
-		then
+			:
+		else
 			source $HOME/.ucpp/settings
 			echo 'export PATH="$PATH:COMMANDS_DIR"' | \
 			sed -e "s|COMMANDS_DIR|$WIND_HOME/workbench-3.0/x86-win32/bin|" >> ~/.bashrc
