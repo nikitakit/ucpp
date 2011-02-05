@@ -1,20 +1,32 @@
 Universal compiling scripts for FRC
 
-Installation (Linux without WindRiver)
- - Add the "ucpp" folder to the system PATH
- - ucpp setup linux-gccdist -i
+Installation instructions:
+ - Add the "ucpp/ucpp" folder to your system PATH
+ - Run the ucpp setup script with appropriate options for your platform
+     Linux without WindRiver:
+       $ ucpp setup linux-gccdist -i
+     Linux with WindRiver, e.g. a dual-boot system:
+       $ ucpp setup linux-windriver -c <path-to-c-drive>
+     Windows using Cygwin:
+       $ ucpp setup windows-cygwin
+     Windows using MSYSgit command prompt:
+       $ ucpp setup windows-git
 
-Installation (Linux with WindRiver, e.g. dual-boot system)
- - Add the "ucpp" folder to the system PATH
- - ucpp setup linux-windriver -c <path-to-c-drive>
-
-Usage:
- - ucpp init -t <team-number>
+Creating a project
+ $ ucpp init -t <team-number>
         Configures the current directory as an FRC C++ project
-		for your team.
- - ucpp configure <command>
-   		Generates a Makefile for your project
- - make
-		Compile the project
- - make deploy
-   		Deploy code to the robot
+        that deploys code to your team's robot.
+  
+        The ucpp build system aims to be fully compatible with
+		development in WindRiver. You can initialize any existing
+		WindRiver project as a ucpp project, as well as any folder
+        that contains C++ files.
+
+Building and deploying code
+ $ ucpp configure
+        Generates a Makefile for your project
+        For additional options, run "ucpp configure help"
+ $ make
+        Compile the project
+ $ make deploy
+        Deploy code to the robot
