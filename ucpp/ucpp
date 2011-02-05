@@ -12,6 +12,7 @@ cat <<EOF
 Usage: ucpp COMMAND [ARGS]
 
 Commands:
+  setup     Set global ucpp settings (required before running other commands)
   init      Configure current directory as a UCPP project
   configure Generate makefiles for this project
 EOF

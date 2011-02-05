@@ -11,7 +11,6 @@ Command: help, -h, --help
 Command: linux-windriver
   Set up Linux system that relies on an existing WindRiver or
   gccdist install
-Options:
     -c <path-to-c-drive>
         Set the path equivalent to the C:/ drive
         (the parent directory of the WindRiver folder)
@@ -20,6 +19,8 @@ Options:
         Set default team number for deploying code
 
 Command: linux-gccdist
+  Set up Linux system that automatically downloads the compiler
+  and WPILib
     -i
         Install Linux/gccdist platform
     -t <team-number>
@@ -28,6 +29,7 @@ Command: linux-gccdist
         Update gccdist and/or recompile WPILib
 
 Command: windows-cygwin
+  Set up a Windows build system that uses Cygwin
    -t <team-number>
        Set default team number for deploying code
 
