@@ -14,6 +14,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+import ucpp.utils.OSValidator;
+import ucpp.utils.Ucpp;
 import ucpp.utils.Uploader;
 
 import com.enterprisedt.net.ftp.FileTransferClient;
@@ -79,47 +81,7 @@ public class InitializeAction implements IObjectActionDelegate
 		try
 		{
 			int team = ucpp.Activator.GetTeamNumber();
-			if (OSValidator.isUnix() || OSValidator.isMac())
-			{
-				Runtime rt = Runtime.getRuntime();
-				String path = System.getenv("PATH");
-				if (!path.contains("ucpp"))
-					path = System.getenv("HOME") + "/ucpp/ucpp:" + path;
-				Process pr = rt.exec(new String[] { System.getenv("HOME") + "/ucpp/ucpp/ucpp", "init", "-t", String.valueOf(team) }, new String[] { "PATH=" + path }, project.getLocation().toFile());
-
-				BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-
-				String line = null;
-
-				while ((line = input.readLine()) != null)
-				{
-					System.out.println(line);
-				}
-
-				int exitVal = pr.waitFor();
-				System.out.println("Exited with error code " + exitVal);
-			}
-			else if (OSValidator.isWindows())
-			{
-				Runtime rt = Runtime.getRuntime();
-				Process pr = rt.exec("C:\\cygwin\\bin\\bash.exe --login -i -c 'cd \""+project.getLocation().toFile()+"\"; ucpp init -t "+String.valueOf(team)+"'", null, project.getLocation().toFile());
-
-				BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-
-				String line = null;
-
-				while ((line = input.readLine()) != null)
-				{
-					System.out.println(line);
-				}
-
-				int exitVal = pr.waitFor();
-				System.out.println("Exited with error code " + exitVal);
-			}
-			else
-			{
-				System.out.println("UNSUPPORTED SYSTEM!");
-			}
+			Ucpp.init(team, project);
 
 		}
 		catch (Exception e)

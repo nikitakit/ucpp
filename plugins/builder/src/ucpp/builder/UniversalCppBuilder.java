@@ -23,6 +23,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import ucpp.utils.OSValidator;
+
 public class UniversalCppBuilder extends IncrementalProjectBuilder
 {
 
