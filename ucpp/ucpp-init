@@ -25,7 +25,14 @@ fi
 if [ -f .ucpp ]
 then
 	echo "ERROR: Project already exists in `pwd`"
-	exit 66
+	echo -n "Overwrite? All customizations will be lost. (y/N)"
+	read answer
+	if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]
+	then
+		:
+	else
+		exit 66
+	fi
 fi
 
 source ucpp_settings

@@ -11,7 +11,6 @@ Command: help, -h, --help
 Command: linux-windriver
   Set up Linux system that relies on an existing WindRiver or
   gccdist install
-Options:
     -c <path-to-c-drive>
         Set the path equivalent to the C:/ drive
         (the parent directory of the WindRiver folder)
@@ -20,6 +19,8 @@ Options:
         Set default team number for deploying code
 
 Command: linux-gccdist
+  Set up Linux system that automatically downloads the compiler
+  and WPILib
     -i
         Install Linux/gccdist platform
     -t <team-number>
@@ -28,6 +29,7 @@ Command: linux-gccdist
         Update gccdist and/or recompile WPILib
 
 Command: windows-cygwin
+  Set up a Windows build system that uses Cygwin
    -t <team-number>
        Set default team number for deploying code
 
@@ -124,17 +126,10 @@ if [ -f "$HOME/.ucpp/settings" ]
 then
 	echo -n "UCPP user settings already exist. Overwrite? (y/N)"
 	read answer
-	a=no
-	if [ "x$answer" = "xy" ]
+	if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]
 	then
-		a=yes
-	fi
-	if [ "x$answer" = "xY" ]
-	then
-		a=yes
-	fi
-	if [ "$a" = "no" ]
-	then
+		:
+	else
 		exit
 	fi
 fi
@@ -171,9 +166,8 @@ export COMPILER_DIR=$WIND_HOME/gnu/3.4.4-vxworks-6.3/x86-win32/bin
 
 
 # Default configure method for "ucpp configure"
-#   Possible values: py, winpy, wr
-# Leave blank to print a help message
-DEFAULT_CONFIGURE_COMMAND=
+#   Possible values: py, winpy, wr, help
+# If left blank, a help message will be shown
 EOF
 }
 
@@ -248,6 +242,12 @@ else
 	gen_settings
 fi
 
+if [ "$command" = "linux-windriver" ] || [ "$command" = "linux-gccdist" ]
+then
+	cat >>"$HOME/.ucpp/settings" <<EOF
+DEFAULT_CONFIGURE_COMMAND=py
+EOF
+fi
 
 if [ "$MAKE_WPILIB" = "yes" ]
 then
@@ -256,7 +256,8 @@ fi
 
 if [ "$command" = "windows-git" ]
 then
-	cat >>$HOME/.ucpp/settings <<'EOF'
+	cat >>"$HOME/.ucpp/settings" <<'EOF'
+DEFAULT_CONFIGURE_COMMAND=winpy
 
 PYTHON="$C_DRIVE/Python27"
 # Use pre-existing python version, if there is one
@@ -287,16 +288,10 @@ EOF
 		echo -n "Add WindRiver commands to PATH via appending to .bashrc? (Y/n)"
 		read answer
 		a=yes
-		if [ "x$answer" = "xN" ]
+		if [ "x$answer" = "xN" ] || [ "x$answer" = "xn" ]
 		then
-			a=no
-		fi
-		if [ "x$answer" = "xn" ]
-		then
-			a=no
-		fi
-		if [ "$a" = "yes" ]
-		then
+			:
+		else
 			source $HOME/.ucpp/settings
 			echo 'export PATH="$PATH:COMMANDS_DIR"' | \
 			sed -e "s|COMMANDS_DIR|$WIND_HOME/workbench-3.0/x86-win32/bin|" >> ~/.bashrc
