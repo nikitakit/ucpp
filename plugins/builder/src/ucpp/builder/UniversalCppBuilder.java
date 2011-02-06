@@ -24,6 +24,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import ucpp.utils.OSValidator;
+import ucpp.utils.Ucpp;
 
 public class UniversalCppBuilder extends IncrementalProjectBuilder
 {
@@ -171,48 +172,7 @@ public class UniversalCppBuilder extends IncrementalProjectBuilder
 			getProject().accept(new SampleResourceVisitor());
 			try
 			{
-				if (OSValidator.isUnix() || OSValidator.isMac())
-				{
-					Runtime rt = Runtime.getRuntime();
-					String path = System.getenv("PATH");
-					if (!path.contains("ucpp"))
-						path = System.getenv("HOME") + "/ucpp/ucpp:" + path;
-					Process pr = rt.exec(new String[] { System.getenv("HOME") + "/ucpp/ucpp/ucpp", "configure", "py" }, new String[] { "PATH=" + path }, this.getProject().getLocation().toFile());
-
-					BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-
-					String line = null;
-
-					while ((line = input.readLine()) != null)
-					{
-						System.out.println(line);
-					}
-
-					int exitVal = pr.waitFor();
-					System.out.println("Exited with error code " + exitVal);
-				}
-				else if (OSValidator.isWindows())
-				{
-					Runtime rt = Runtime.getRuntime();
-					Process pr = rt.exec("C:\\cygwin\\bin\\bash.exe --login -i -c \"ucpp configure winpy\"", null, this.getProject().getLocation().toFile());
-
-					BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-
-					String line = null;
-
-					while ((line = input.readLine()) != null)
-					{
-						System.out.println(line);
-					}
-
-					int exitVal = pr.waitFor();
-					System.out.println("Exited with error code " + exitVal);
-				}
-				else
-				{
-					System.out.println("UNSUPPORTED SYSTEM!");
-				}
-
+				Ucpp.makefile(getProject());
 			}
 			catch (Exception e)
 			{
