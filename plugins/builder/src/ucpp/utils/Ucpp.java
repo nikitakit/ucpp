@@ -8,9 +8,15 @@ import org.eclipse.core.resources.IProject;
 
 public class Ucpp
 {
-	public static void setup(int team, String options, IProject project) throws Exception
+	public static void setup(String options, IProject project) throws Exception
 	{
 		exe("setup " + options, project);
+	}
+
+	public static void setup(IProject project)
+	{
+		SetupConfigDialog setupdlg = new SetupConfigDialog(project);
+		setupdlg.open();
 	}
 
 	public static void init(int team, IProject project) throws Exception
@@ -25,13 +31,14 @@ public class Ucpp
 
 	private static void exe(String command, IProject project) throws Exception
 	{
+		System.out.println("executing '"+command+"'");
 		if (OSValidator.isUnix() || OSValidator.isMac())
 		{
 			Runtime rt = Runtime.getRuntime();
 			String path = System.getenv("PATH");
 			if (!path.contains("ucpp"))
 				path = System.getenv("HOME") + "/ucpp/ucpp:" + path;
-			Process pr = rt.exec(new String[] { "ucpp " + command }, new String[] { "PATH=" + path }, project.getLocation().toFile());
+			Process pr = rt.exec(new String[] { "ucpp -s " + command }, new String[] { "PATH=" + path }, project.getLocation().toFile());
 
 			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 
@@ -48,10 +55,8 @@ public class Ucpp
 		else if (OSValidator.isWindows())
 		{
 			Runtime rt = Runtime.getRuntime();
-			Process pr = rt.exec("C:\\cygwin\\bin\\bash.exe --login -i -c 'cd \"" + project.getLocation().toFile() + "\"; ucpp " + command + "'", null, project.getLocation().toFile());
-
+			Process pr = rt.exec("C:\\cygwin\\bin\\bash.exe --login -i -c 'cd \"" + project.getLocation().toFile() + "\"; ucpp -s " + command + "'", null, project.getLocation().toFile());
 			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-
 			String line = null;
 
 			while ((line = input.readLine()) != null)

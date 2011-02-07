@@ -46,6 +46,13 @@ DOWNLOAD_GCCDIST=no
 MAKE_WPILIB=no
 
 command=help
+silent=no
+
+if [ "x$1" = "x-s" ]
+then
+	silent=yes
+	shift
+fi
 
 if [ "x$1" = "xlinux-windriver" ]
 then
@@ -125,10 +132,15 @@ gen_settings()
 if [ -f "$HOME/.ucpp/settings" ]
 then
 	echo -n "UCPP user settings already exist. Overwrite? (y/N)"
-	read answer
-	if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]
+	if [ "x$silent" = "xno" ]
 	then
-		:
+		read answer
+		if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]
+		then
+			:
+		else
+			exit
+		fi
 	else
 		exit
 	fi

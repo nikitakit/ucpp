@@ -54,7 +54,7 @@
                class="ucpp.builder.InitializeAction"
                enablesFor="+"
                id="builder.init"
-               label="Initialize as Universal C++ project..."
+               label="Initialize Universal C++ for FRC..."
                menubarPath="builder.menu1/additions">
          </action>
       </objectContribution>

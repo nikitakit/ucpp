@@ -80,9 +80,7 @@ public class InitializeAction implements IObjectActionDelegate
 	{
 		try
 		{
-			int team = ucpp.Activator.GetTeamNumber();
-			Ucpp.init(team, project);
-
+			Ucpp.setup(project);
 		}
 		catch (Exception e)
 		{

@@ -3,6 +3,16 @@
 # Aliases for typing space instead of "-"
 cmd="$1"
 shift
+if [ "x$cmd" = "x-s" ]
+then
+	cmd="$1"
+	shift
+	if which ucpp-$cmd >& /dev/null
+	then
+		exec ucpp-$cmd -s "$@"
+	fi
+fi
+
 if which ucpp-$cmd >& /dev/null
 then
 	exec ucpp-$cmd "$@"

@@ -13,6 +13,8 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+import ucpp.utils.Ucpp;
+
 public class ToggleNatureAction implements IObjectActionDelegate
 {
 
@@ -103,6 +105,17 @@ public class ToggleNatureAction implements IObjectActionDelegate
 			newNatures[natures.length] = SampleNature.NATURE_ID;
 			description.setNatureIds(newNatures);
 			project.setDescription(description, null);
+			
+			int team = ucpp.Activator.GetTeamNumber();
+			try
+			{
+				Ucpp.init(team, project);
+			}
+			catch (Exception e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		catch (CoreException e)
 		{

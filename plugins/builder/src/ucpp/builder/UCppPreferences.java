@@ -18,7 +18,6 @@ import ucpp.Activator;
 
 public class UCppPreferences extends FieldEditorPreferencePage implements IWorkbenchPreferencePage
 {
-
 	public UCppPreferences()
 	{
 		super(GRID);
@@ -33,7 +32,6 @@ public class UCppPreferences extends FieldEditorPreferencePage implements IWorkb
 	 */
 	public void createFieldEditors()
 	{
-
 		IntegerFieldEditor team = new IntegerFieldEditor("Team Number", "The team &number. ", getFieldEditorParent());
 		team.setValidRange(0, 25000);
 		addField(team);
