@@ -8,6 +8,7 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.SWT;
@@ -64,15 +65,22 @@ public class SetupConfigDialog
 			{
 				try
 				{
-					Ucpp.setup(setupType.getText()+" "+options.getText(), prj);
+					ReturnValue rv = Ucpp.setup(setupType.getText()+" "+options.getText(), prj);
+					if (!rv.wasSuccessful())
+					{
+						MessageBox mb = new MessageBox(sShell);
+						mb.setText("Error initializing UC++!"+ReturnValue.lineSeparator+rv.getOutput());
+					}
+					else
+					{
+						sShell.close();
+					}
 				}
 				catch (Exception e1)
 				{
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-
-				sShell.close();
 			}
 		});
 	}
@@ -85,14 +93,6 @@ public class SetupConfigDialog
 	{
 		setupType = new Combo(sShell, SWT.NONE);
 		setupType.setText("cygwin");
-//		setupType.addModifyListener(new org.eclipse.swt.events.ModifyListener()
-//		{
-//			public void modifyText(org.eclipse.swt.events.ModifyEvent e)
-//			{
-//				if (setupType.getText().contains("windows"))
-//					
-//			}
-//		});
 		if (OSValidator.isMac()||OSValidator.isUnix())
 			setupType.setItems(new String[]{"linux-windriver", "linux-gccdist"});
 		else if (OSValidator.isWindows())
