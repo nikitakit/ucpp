@@ -5,11 +5,12 @@ cmd="$1"
 shift
 if [ "x$cmd" = "x-s" ]
 then
+	export UCPP_SILENT=yes
 	cmd="$1"
 	shift
 	if which ucpp-$cmd >& /dev/null
 	then
-		exec ucpp-$cmd -s "$@"
+		exec ucpp-$cmd "$@"
 	fi
 fi
 
