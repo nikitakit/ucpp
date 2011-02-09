@@ -16,10 +16,10 @@ Creating a project
  $ ucpp init -t <team-number>
         Configures the current directory as an FRC C++ project
         that deploys code to your team's robot.
-  
+
         The ucpp build system aims to be fully compatible with
-		development in WindRiver. You can initialize any existing
-		WindRiver project as a ucpp project, as well as any folder
+        development in WindRiver. You can initialize any existing
+        WindRiver project as a ucpp project, as well as any folder
         that contains C++ files.
 
 Building and deploying code
