@@ -1,7 +1,10 @@
 package ucpp.builder;
 
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
@@ -30,7 +33,23 @@ public class DeployAction implements IWorkbenchWindowActionDelegate
 	{
 		try
 		{
-			Uploader.Upload(Activator.GetDefaultFile(), Activator.GetTeamNumber());
+			new ProgressBox(new IRunnableWithProgress()
+			{
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
+				{
+					monitor.beginTask("Deploying...", IProgressMonitor.UNKNOWN);
+					try
+					{
+						Uploader.Upload(Activator.GetDefaultFile(), Activator.GetTeamNumber());
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+					monitor.done();
+				}
+			});
 		}
 		catch (Exception e)
 		{

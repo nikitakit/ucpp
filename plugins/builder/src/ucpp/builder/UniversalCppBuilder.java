@@ -1,8 +1,5 @@
 package ucpp.builder;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -23,7 +20,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import ucpp.utils.OSValidator;
 import ucpp.utils.Ucpp;
 
 public class UniversalCppBuilder extends IncrementalProjectBuilder
@@ -131,7 +127,7 @@ public class UniversalCppBuilder extends IncrementalProjectBuilder
 	 * @see org.eclipse.core.internal.events.InternalBuilder#build(int,
 	 * java.util.Map, org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException
+	protected IProject[] build(int kind, @SuppressWarnings("rawtypes") Map args, IProgressMonitor monitor) throws CoreException
 	{
 		fullBuild(monitor);
 		return null;

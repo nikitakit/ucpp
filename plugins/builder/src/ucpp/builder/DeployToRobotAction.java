@@ -1,22 +1,19 @@
 package ucpp.builder;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
 import ucpp.utils.Uploader;
-
-import com.enterprisedt.net.ftp.FileTransferClient;
 
 public class DeployToRobotAction implements IObjectActionDelegate
 {
@@ -74,12 +71,28 @@ public class DeployToRobotAction implements IObjectActionDelegate
 	{
 	}
 
-	private void deploy(IProject project)
+	private void deploy(final IProject project)
 	{
 		try
 		{
-			int team = ucpp.Activator.GetTeamNumber(project);
-			Uploader.Upload(project.getLocation().toString() + "/PPC603gnu/" + project.getName() + "/Debug/" + project.getName() + ".out", team);
+			new ProgressBox(new IRunnableWithProgress()
+			{
+				@Override
+				public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
+				{
+					monitor.beginTask("Deploying...", IProgressMonitor.UNKNOWN);
+					int team = ucpp.Activator.GetTeamNumber(project);
+					try
+					{
+						Uploader.Upload(project.getLocation().toString() + "/PPC603gnu/" + project.getName() + "/Debug/" + project.getName() + ".out", team);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+					monitor.done();
+				}
+			});
 		}
 		catch (Exception e)
 		{
@@ -87,5 +100,4 @@ public class DeployToRobotAction implements IObjectActionDelegate
 			e.printStackTrace();
 		}
 	}
-
 }
