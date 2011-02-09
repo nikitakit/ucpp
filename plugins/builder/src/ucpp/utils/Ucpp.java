@@ -8,9 +8,9 @@ import org.eclipse.core.resources.IProject;
 
 public class Ucpp
 {
-	public static void setup(String options, IProject project) throws Exception
+	public static ReturnValue setup(String options, IProject project) throws Exception
 	{
-		exe("setup " + options, project);
+		return exe("setup " + options, project);
 	}
 
 	public static void setup(IProject project)
@@ -19,14 +19,14 @@ public class Ucpp
 		setupdlg.open();
 	}
 
-	public static void init(int team, IProject project) throws Exception
+	public static ReturnValue init(int team, IProject project) throws Exception
 	{
-		exe("init -t " + String.valueOf(team), project);
+		return exe("init -t " + String.valueOf(team), project);
 	}
 
-	public static void makefile(IProject project) throws Exception
+	public static ReturnValue makefile(IProject project) throws Exception
 	{
-		exe("configure" + (OSValidator.isWindows() ? "winpy" : "py"), project);
+		return exe("configure" + (OSValidator.isWindows() ? "winpy" : "py"), project);
 	}
 
 	private static ReturnValue exe(String command, IProject project) throws Exception
