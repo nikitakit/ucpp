@@ -25,7 +25,7 @@ public class Ucpp
 
 	public static ReturnValue makefile(IProject project) throws Exception
 	{
-		return exe("configure" + (OSValidator.isWindows() ? "winpy" : "py"), project);
+		return exe("configure " + (OSValidator.isWindows() ? "winpy" : "py"), project);
 	}
 
 	private static ReturnValue exe(String command, IProject project) throws Exception
