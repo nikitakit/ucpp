@@ -56,13 +56,13 @@ cat <<EOF >.ucpp
 ##### Project-specific ucpp settings #####
 
 # Workspace root directory
-export CPP_PROJECT_WS_ROOT_DIR=$CPP_PROJECT_WS_ROOT_DIR
+export CPP_PROJECT_WS_ROOT_DIR="$CPP_PROJECT_WS_ROOT_DIR"
 
 # Project name
-export CPP_PROJECT_NAME=$CPP_PROJECT_NAME
+export CPP_PROJECT_NAME="$CPP_PROJECT_NAME"
 
 # Project root directory
-export CPP_PROJECT_ROOT_DIR=$CPP_PROJECT_ROOT_DIR
+export CPP_PROJECT_ROOT_DIR="$CPP_PROJECT_ROOT_DIR"
 
 # IP to deploy robot code
 export DEPLOY_IP=$DEPLOY_IP
@@ -106,21 +106,20 @@ force: ;
 EOF
 
 # On Windows, don't use the Linux Makefile
-if [ `uname` = "windows32" ]
-then
+case `uname` in 
+	windows32|MINGW*)
 	mv Makefile PPC603gnu/Makefile_tmp
 	cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" > Makefile
 	rm PPC603gnu/Makefile_tmp
-fi
-
-if [ `uname` = "CYGWIN_NT-6.0" ]
-then
+    ;;
+	CYGWIN*)
 	mv Makefile PPC603gnu/Makefile_tmp
 	cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" |\
 	sed -e 's/$(MAKE)/MAKE_CMD/' |\
 	sed -e "s|MAKE_CMD|$WIND_HOME/workbench-3.0/x86-win32/bin/make.exe|"> Makefile
 	rm PPC603gnu/Makefile_tmp
-fi
+    ;;
+esac
 
 # User diagnostics
 

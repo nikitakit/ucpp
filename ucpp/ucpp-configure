@@ -139,6 +139,7 @@ function modify_win_makefile()
 	sed "s|%NEWLINE%|\\
 |g" |\
 	sed "s|TOOL_PATH = |TOOL_PATH = $COMPILER_DIR/|g" |\
+	sed 's|nmppc|\$\(TOOL_PATH\)nmppc.exe|g' |\
 	cat
 }
 
