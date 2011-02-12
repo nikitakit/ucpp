@@ -91,15 +91,16 @@ fi
 cat >Makefile <<'EOF'
 #UCPP makefile
 
-# For the default target, use the WindRiver makefile
+# Default target
 all: force
 	cd PPC603gnu && exec $(MAKE) -f Makefile_linux
 
-# TODO: insert targets that download gcc and WPIlib
+# Don't do anything for the "Makefile" target
+Makefile: ;
 
-# For all other targets, use the WindRiver makefile
+# Recursively run all other targets
 %: force
-	cd PPC603gnu && exec $(MAKE) -f Makefile_linux "$@"
+	cd PPC603gnu && exec $(MAKE) -f Makefile_linux "$*"
 
 force: ;
 
