@@ -2,7 +2,6 @@ package ucpp.builder;
 
 import java.util.Iterator;
 
-import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
