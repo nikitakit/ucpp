@@ -106,20 +106,23 @@ force: ;
 
 EOF
 
+# Create a PPC603gnu directory, if needed
+mkdir -p PPC603gnu
+
 # On Windows, don't use the Linux Makefile
 case `uname` in 
 	windows32|MINGW*)
-	mv Makefile PPC603gnu/Makefile_tmp
-	cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" > Makefile
-	rm PPC603gnu/Makefile_tmp
-    ;;
+		mv Makefile PPC603gnu/Makefile_tmp
+		cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" > Makefile
+		rm PPC603gnu/Makefile_tmp
+		;;
 	CYGWIN*)
-	mv Makefile PPC603gnu/Makefile_tmp
-	cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" |\
-	sed -e 's/$(MAKE)/MAKE_CMD/' |\
-	sed -e "s|MAKE_CMD|$WIND_HOME/workbench-3.0/x86-win32/bin/make.exe|"> Makefile
-	rm PPC603gnu/Makefile_tmp
-    ;;
+		mv Makefile PPC603gnu/Makefile_tmp
+		cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" |\
+		sed -e 's/$(MAKE)/MAKE_CMD/' |\
+		sed -e "s|MAKE_CMD|$WIND_HOME/workbench-3.0/x86-win32/bin/make.exe|"> Makefile
+		rm PPC603gnu/Makefile_tmp
+		;;
 esac
 
 # User diagnostics
