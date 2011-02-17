@@ -254,6 +254,13 @@ DEFAULT_CONFIGURE_COMMAND=py
 EOF
 fi
 
+if [ "$command" = "windows-cygwin" ]
+then
+	cat >>"$HOME/.ucpp/settings" <<'EOF'
+DEFAULT_CONFIGURE_COMMAND=winpy
+EOF
+fi
+
 if [ "$MAKE_WPILIB" = "yes" ]
 then
 	make_wpilib
