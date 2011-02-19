@@ -18,9 +18,12 @@ f.close()
 # Find all the C++ files in the current directory
 
 file_names = []
-for filename in os.listdir("."):
-    if filename[-4:]==".cpp":
-        file_names.append(filename[:-4])
+
+for root,dirs,files in os.walk("."):
+    base=""
+    if root != ".":
+        base=root[2:]+"/"
+    file_names += [base+f[:-4] for f in files if f[-4:]==".cpp"]
 
 ##### Generate makefile sections #####
 
