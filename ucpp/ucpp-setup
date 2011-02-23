@@ -21,12 +21,8 @@ Command: linux-windriver
 Command: linux-gccdist
   Set up Linux system that automatically downloads the compiler
   and WPILib
-    -i
-        Install Linux/gccdist platform
     -t <team-number>
         Set default team number for deploying code
-    -b
-        Update gccdist and/or recompile WPILib
 
 Command: windows-cygwin
   Set up a Windows build system that uses Cygwin
@@ -43,7 +39,6 @@ EOF
 
 C_DRIVE=
 DOWNLOAD_GCCDIST=no
-MAKE_WPILIB=no
 
 command=help
 
@@ -56,6 +51,7 @@ fi
 if [ "x$1" = "xlinux-gccdist" ]
 then
 	command=linux-gccdist
+	C_DRIVE=$HOME/.ucpp/gccdist/
 	shift
 fi
 
@@ -98,13 +94,6 @@ EOF
 			;;
 		c)
 			C_DRIVE=$OPTARG
-			;;
-		i)
-			C_DRIVE=$HOME/.ucpp/gccdist/
-			MAKE_WPILIB=yes
-			;;
-		b)
-			MAKE_WPILIB=yes
 			;;
 		\?)
 			echo "Invalid option: -$OPTARG" >&2
@@ -176,54 +165,68 @@ export COMPILER_DIR=$WIND_HOME/gnu/3.4.4-vxworks-6.3/x86-win32/bin
 EOF
 }
 
-make_wpilib()
+install_gccdist()
 {
-if [ -d "$HOME/.ucpp" ]
-then
-	:
-else
-	echo "ERROR: gccdist+WPILib not yet installed"
-	exit 66
-fi
-
 SCRIPT_INSTALL_DIR=`dirname "$0"`
 MAKE='$(MAKE)'
-cat >$HOME/.ucpp/Makefile_gccdist <<EOF
-include settings
+cat >$HOME/.ucpp/install_gccdist.sh <<'EOF'
+source settings
 
-wpilib: build-wpilib
-	mkdir -p gccdist/WindRiver/vxworks-6.3/target/lib
-	cp gccdist/WindRiver/vxworks-6.3/target/h/WPILib/PPC603gnu/WPILib/Debug/WPILib.a gccdist/WindRiver/vxworks-6.3/target/lib
+init_dir="`pwd`"
 
-build-wpilib: gccdist/WindRiver/vxworks-6.3/target/h/WPILib
-	cd gccdist/WindRiver/vxworks-6.3/target/h/WPILib && $SCRIPT_INSTALL_DIR/ucpp-init && $SCRIPT_INSTALL_DIR/ucpp-configure wpipy && cd PPC603gnu && exec $MAKE -f Makefile_linux
+#GCCDIST
+if [ -f gccdist.zip ]
+then
+	echo "-----> gccdist download [DONE]"
+else
+	echo "-----> gccdist download ..."
+	wget ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip -O gccdist.zip
+	echo "-----> gccdist download [DONE]"
+fi
 
-clean-project:
-	rm -f gccdist/WindRiver/vxworks-6.3/target/h/WPILib/.ucpp
-
-gccdist: gccdist.zip
+if [ -d gccdist ]
+then
+	echo "-----> gccdist install [DONE]"
+else
+	echo "-----> gccdist install ..."
 	unzip -oDDqq gccdist.zip -d .
 	mkdir -p gccdist/WindRiver/license
 	cp gccdist/supp/zwrsLicense.lic gccdist/WindRiver/license/zwrsLicense.lic
+	echo "-----> gccdist install [DONE]"
+fi
 
+echo "-----> WPILib download ..."
+wget -q http://firstforge.wpi.edu/sf/frs/do/viewSummary/projects.wpilib/frs -O - | grep 'WPILib C++ update' | sed "s/.*<a href=\"\([^\"]*\)\">.*/http:\/\/firstforge.wpi.edu\1/" | uniq | sed "s/;.*//" > wpilib_page1.url
+wget `cat wpilib_page1.url` -q -O - | grep "rel[0-9][0-9]*" | grep href | sed "s/.*\(rel[0-9]*\)/\1/" | sort -r | head -n 1 | sed "s/.*<a href=\"\([^\"]*\).*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page2.url
+wget `cat wpilib_page2.url` -q -O - | grep "\.exe\s*<\/a>" | sed "s/.*<a href=\"\([^\"]*\)\".*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page3.url
 
-gccdist.zip:
-	wget ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip -O gccdist.zip
+touch wpilib_last_downloaded.url
+if [ "x`cat wpilib_page3.url`" == "x`cat wpilib_last_downloaded.url`" ]
+then
+	echo "-----> WPILib already up-to-date"
+else
+	wget `cat wpilib_page3.url` -O wpilibupdate.exe
+	mv wpilib_page3.url wpilib_last_downloaded.url
+	echo "-----> WPILib download [DONE]"
+fi
 
-gccdist/WindRiver/WPILib/WPILibC++Source20110106rev2242.zip: gccdist
-	mkdir -p gccdist/WindRiver/WPILib
-	wget http://team3021.com/files/programming/WPILibC++Source20110106rev2242.zip -O gccdist/WindRiver/WPILib/WPILibC++Source20110106rev2242.zip 
+echo "-----> WPILib install ..."
+cd gccdist/WindRiver
+echo "A" | unzip ../../wpilibupdate.exe > unziplog.txt 2>/dev/null
+cd ../../
+rm -f wpilib_page1.url wpilib_page2.url wpilib_page3.url
+echo "-----> WPILib install [DONE]"
 
-gccdist/WindRiver/vxworks-6.3/target/h/WPILib: gccdist/WindRiver/WPILib/WPILibC++Source20110106rev2242.zip
-	unzip -oDDqq gccdist/WindRiver/WPILib/WPILibC++Source20110106rev2242.zip -d gccdist/WindRiver/vxworks-6.3/target/h || [ -d gccdist/WindRiver/WPILib ]
+echo "-----> [FINISHED]"
+echo -n "WPILib version: "
+cat gccdist/WindRiver/unziplog.txt | grep "inflating: WPILib/.*\.zip" | sed "s/.*\(WPILib\/.*\.zip\).*/\1/"
 
 EOF
 
 cd $HOME/.ucpp
 
-echo "Downloading gccdist+WPILib and compiling WPILib..."
-make -f Makefile_gccdist clean-project
-make -f Makefile_gccdist -j2
+chmod +x ./install_gccdist.sh
+./install_gccdist.sh
 }
 
 
@@ -235,23 +238,24 @@ then
 		echo "Please specify path to C:/ drive"
 		exit 1
 	fi
-	if [ "$command" = "linux-gccdist" ]
-	then
-		if [ "$MAKE_WPILIB" = "no" ]
-		then
-			echo "Specify either '-i' or '-b'"
-			exit 1
-		fi
-	fi
 else
 	gen_settings
 fi
 
-if [ "$command" = "linux-windriver" ] || [ "$command" = "linux-gccdist" ]
+if [ "$command" = "linux-windriver" ]
 then
 	cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
 EOF
+fi
+
+if [ "$command" = "linux-gccdist" ]
+then
+	cat >>"$HOME/.ucpp/settings" <<EOF
+DEFAULT_CONFIGURE_COMMAND=py
+EOF
+
+	install_gccdist
 fi
 
 if [ "$command" = "windows-cygwin" ]
@@ -259,11 +263,6 @@ then
 	cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
 EOF
-fi
-
-if [ "$MAKE_WPILIB" = "yes" ]
-then
-	make_wpilib
 fi
 
 if [ "$command" = "windows-git" ]
