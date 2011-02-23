@@ -3,9 +3,9 @@ Universal compiling scripts for FRC
 Installation instructions:
  - Add the "ucpp/ucpp" folder to your system PATH
  - Run the ucpp setup script with appropriate options for your platform
-     Linux without WindRiver:
-       $ ucpp setup linux-gccdist -i
-     Linux with WindRiver, e.g. a dual-boot system:
+     Linux:
+       $ ucpp setup linux-gccdist
+     Linux (with WindRiver installed, e.g. a dual-boot system)
        $ ucpp setup linux-windriver -c <path-to-c-drive>
      Windows using Cygwin:
        $ ucpp setup windows-cygwin
