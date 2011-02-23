@@ -1,80 +1,102 @@
 #! /bin/bash
 
+case `uname` in 
+	Linux*)
+		platform=linux-gccdist
+		C_DRIVE=$HOME/.ucpp/gccdist/
+		;;
+	windows32|MINGW*)
+		platform=windows-git
+		C_DRIVE=/c/
+		;;
+	CYGWIN*)
+		platform=windows-cygwin
+		C_DRIVE=/cygdrive/c/
+		;;
+esac
+
 usage()
 {
+	if [ "x$platform" = "x" ]
+	then
+		cat<<EOF
+Usage: ucpp setup PLATFORM [options]
+  Installs Universal C++ command-line tools.
+
+EOF
+	else
+		cat<<EOF
+Usage: ucpp setup [PLATFORM] [-t <team-number>]
+  Installs Universal C++ command-line tools.
+  The default platform is: $platform
+
+EOF
+	fi
 	cat <<EOF
-Usage: ucpp setup COMMAND [options]
-
-Command: help, -h, --help
-  Show this message
-
-Command: linux-windriver
-  Set up Linux system that relies on an existing WindRiver or
-  gccdist install
-    -c <path-to-c-drive>
+Options
+  -h, --help, help
+      Display this help and exit
+  -t <team-number>
+      Set default team number for deploying code
+  -c <path-to-c-drive>
+      For the linux-windriver platform ONLY:
         Set the path equivalent to the C:/ drive
         (the parent directory of the WindRiver folder)
         NOTE: requires trailing slash (/)
-    -t <team-number>
-        Set default team number for deploying code
+      
+Available Platforms:
+  linux-gccdist
+      Set up Linux system that automatically downloads
+      the compiler and the latest version of WPILib
+      Re-run this command to download WPILib updates
 
-Command: linux-gccdist
-  Set up Linux system that automatically downloads the compiler
-  and WPILib
-    -t <team-number>
-        Set default team number for deploying code
+  linux-windriver
+      Set up Linux system that relies on an existing
+      WindRiver or gccdist install
 
-Command: windows-cygwin
-  Set up a Windows build system that uses Cygwin
-   -t <team-number>
-       Set default team number for deploying code
+  windows-cygwin
+      Set up a Windows build system that uses Cygwin
 
-Command: windows-git
-  Set up a Windows build system that relies on WindRiver and
-  MSYSgit
-    -t <team-number>
-        Set default team number for deploying code
+  windows-git
+      Set up a Windows build system that relies on
+      WindRiver and MSYSgit
 EOF
 }
 
-C_DRIVE=
-DOWNLOAD_GCCDIST=no
-
-command=help
-
 if [ "x$1" = "xlinux-windriver" ]
 then
-	command=linux-windriver
+	platform=linux-windriver
+	C_DRIVE=
 	shift
 fi
 
 if [ "x$1" = "xlinux-gccdist" ]
 then
-	command=linux-gccdist
+	platform=linux-gccdist
 	C_DRIVE=$HOME/.ucpp/gccdist/
 	shift
 fi
 
 if [ "x$1" = "xwindows-cygwin" ]
 then
-	command=windows-cygwin
+	platform=windows-cygwin
 	C_DRIVE=/cygdrive/c/
 fi
 
 if [ "x$1" = "xwindows-git" ]
 then
-	command=windows-git
+	platform=windows-git
 	C_DRIVE=/c/
 	shift
 fi
 
-if [ "$command" = "help" ]
+if [ "x$1" = "xhelp" ] || [ "x$1" = "x--help" ] || [ "x$platform" = "x" ]
 then
 	usage
 	exit
 fi
 
-while getopts "ht:c:ib" opt; do
+while getopts "ht:c:" opt; do
 	case $opt in
 		h)
 			usage
@@ -233,7 +255,7 @@ chmod +x ./install_gccdist.sh
 
 if [ "x$C_DRIVE" = "x" ]
 then
-	if [ "$command" = "linux-windriver" ]
+	if [ "$platform" = "linux-windriver" ]
 	then
 		echo "Please specify path to C:/ drive"
 		exit 1
@@ -242,14 +264,14 @@ else
 	gen_settings
 fi
 
-if [ "$command" = "linux-windriver" ]
+if [ "$platform" = "linux-windriver" ]
 then
 	cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
 EOF
 fi
 
-if [ "$command" = "linux-gccdist" ]
+if [ "$platform" = "linux-gccdist" ]
 then
 	cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
@@ -258,14 +280,14 @@ EOF
 	install_gccdist
 fi
 
-if [ "$command" = "windows-cygwin" ]
+if [ "$platform" = "windows-cygwin" ]
 then
 	cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
 EOF
 fi
 
-if [ "$command" = "windows-git" ]
+if [ "$platform" = "windows-git" ]
 then
 	cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
