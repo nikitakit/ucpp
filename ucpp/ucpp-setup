@@ -133,26 +133,26 @@ done
 
 gen_settings()
 {
-if [ -f "$HOME/.ucpp/settings" ]
-then
-	echo -n "UCPP user settings already exist. Overwrite? (y/N)"
-	if [ "x$UCPP_SILENT" = "xyes" ]
+	if [ -f "$HOME/.ucpp/settings" ]
 	then
-		exit
-	else
-		read answer
-		if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]
+		echo -n "UCPP user settings already exist. Overwrite? (y/N)"
+		if [ "x$UCPP_SILENT" = "xyes" ]
 		then
-			:
-		else
 			exit
+		else
+			read answer
+			if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]
+			then
+				:
+			else
+				exit
+			fi
 		fi
 	fi
-fi
 
-mkdir -p "$HOME/.ucpp"
+	mkdir -p "$HOME/.ucpp"
 
-cat >"$HOME/.ucpp/settings" <<EOF
+	cat >"$HOME/.ucpp/settings" <<EOF
 #! /bin/bash
 #  Also read by GNU make - use only variable defs here
 
@@ -171,7 +171,7 @@ export DEPLOY_IP=$DEPLOY_IP
 export C_DRIVE=$C_DRIVE
 EOF
 
-cat >>"$HOME/.ucpp/settings" <<'EOF'
+	cat >>"$HOME/.ucpp/settings" <<'EOF'
 
 export WIND_HOME=${C_DRIVE}WindRiver
 export WIND_BASE=$WIND_HOME/vxworks-6.3
@@ -189,90 +189,75 @@ EOF
 
 install_gccdist()
 {
-SCRIPT_INSTALL_DIR=`dirname "$0"`
-MAKE='$(MAKE)'
-cat >$HOME/.ucpp/install_gccdist.sh <<'EOF'
-source settings
+	cd $HOME/.ucpp
 
-init_dir="`pwd`"
-
-#GCCDIST
-if [ -f gccdist.zip ]
-then
-	echo "-----> gccdist download [DONE]"
-else
-	echo "-----> gccdist download ..."
-	wget ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip -O gccdist.zip
-	echo "-----> gccdist download [DONE]"
-fi
-
-if [ -d gccdist ]
-then
-	echo "-----> gccdist install [DONE]"
-else
-	echo "-----> gccdist install ..."
-	unzip -oDDqq gccdist.zip -d .
-	mkdir -p gccdist/WindRiver/license
-	cp gccdist/supp/zwrsLicense.lic gccdist/WindRiver/license/zwrsLicense.lic
-	echo "-----> gccdist install [DONE]"
-fi
-
-echo "-----> WPILib download ..."
-wget -q http://firstforge.wpi.edu/sf/frs/do/viewSummary/projects.wpilib/frs -O - | grep 'WPILib C++ update' | sed "s/.*<a href=\"\([^\"]*\)\">.*/http:\/\/firstforge.wpi.edu\1/" | uniq | sed "s/;.*//" > wpilib_page1.url
-wget `cat wpilib_page1.url` -q -O - | grep "rel[0-9][0-9]*" | grep href | sed "s/.*\(rel[0-9]*\)/\1/" | sort -r | head -n 1 | sed "s/.*<a href=\"\([^\"]*\).*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page2.url
-wget `cat wpilib_page2.url` -q -O - | grep "\.exe\s*<\/a>" | sed "s/.*<a href=\"\([^\"]*\)\".*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page3.url
-
-touch wpilib_last_downloaded.url
-if [ "x`cat wpilib_page3.url`" == "x`cat wpilib_last_downloaded.url`" ]
-then
-	echo "-----> WPILib already up-to-date"
-else
-	wget `cat wpilib_page3.url` -O wpilibupdate.exe
-	mv wpilib_page3.url wpilib_last_downloaded.url
-	echo "-----> WPILib download [DONE]"
-fi
-
-echo "-----> WPILib install ..."
-cd gccdist/WindRiver
-echo "A" | unzip ../../wpilibupdate.exe > unziplog.txt 2>/dev/null
-cd ../../
-rm -f wpilib_page1.url wpilib_page2.url wpilib_page3.url
-echo "-----> WPILib install [DONE]"
-
-echo "-----> [FINISHED]"
-echo -n "WPILib version: "
-cat gccdist/WindRiver/unziplog.txt | grep "inflating: WPILib/.*\.zip" | sed "s/.*\(WPILib\/.*\.zip\).*/\1/"
-
-EOF
-
-cd $HOME/.ucpp
-
-chmod +x ./install_gccdist.sh
-./install_gccdist.sh
-}
-
-
-
-if [ "x$C_DRIVE" = "x" ]
-then
-	if [ "$platform" = "linux-windriver" ]
+	if [ -f gccdist.zip ]
 	then
-		echo "Please specify path to C:/ drive"
-		exit 1
+		echo "-----> gccdist download [DONE]"
+	else
+		echo "-----> gccdist download ..."
+		wget ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip -O gccdist.zip
+		echo "-----> gccdist download [DONE]"
 	fi
-else
-	gen_settings
-fi
+
+	if [ -d gccdist ]
+	then
+		echo "-----> gccdist install [DONE]"
+	else
+		echo "-----> gccdist install ..."
+		unzip -oDDqq gccdist.zip -d .
+		mkdir -p gccdist/WindRiver/license
+		cp gccdist/supp/zwrsLicense.lic gccdist/WindRiver/license/zwrsLicense.lic
+		echo "-----> gccdist install [DONE]"
+	fi
+
+	echo -n "-----> Checking for WPILib updates... "
+	wget -q http://firstforge.wpi.edu/sf/frs/do/viewSummary/projects.wpilib/frs -O - | grep 'WPILib C++ update' | sed "s/.*<a href=\"\([^\"]*\)\">.*/http:\/\/firstforge.wpi.edu\1/" | uniq | sed "s/;.*//" > wpilib_page1.url
+	wget `cat wpilib_page1.url` -q -O - | grep "rel[0-9][0-9]*" | grep href | sed "s/.*\(rel[0-9]*\)/\1/" | sort -r | head -n 1 | sed "s/.*<a href=\"\([^\"]*\).*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page2.url
+	wget `cat wpilib_page2.url` -q -O - | grep "\.exe\s*<\/a>" | sed "s/.*<a href=\"\([^\"]*\)\".*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page3.url
+
+	touch wpilib_last_downloaded.url
+	if [ "x`cat wpilib_page3.url`" == "x`cat wpilib_last_downloaded.url`" ]
+	then
+		echo "no new updates"
+	else
+		echo "updates available"
+		echo "-----> WPILib download ..."
+		wget `cat wpilib_page3.url` -O wpilibupdate.exe
+		mv wpilib_page3.url wpilib_last_downloaded.url
+		echo "-----> WPILib download [DONE]"
+	fi
+
+	echo "-----> WPILib install ..."
+	cd gccdist/WindRiver
+	echo "A" | unzip ../../wpilibupdate.exe > unziplog.txt 2>/dev/null
+	cd ../../
+	rm -f wpilib_page1.url wpilib_page2.url wpilib_page3.url
+	echo "-----> WPILib install [DONE]"
+
+	echo "-----> [FINISHED]"
+	echo -n "WPILib version: "
+	cat gccdist/WindRiver/unziplog.txt | grep "inflating: WPILib/.*\.zip" | sed "s/.*\(WPILib\/.*\.zip\).*/\1/"
+
+}
 
 if [ "$platform" = "linux-windriver" ]
 then
-	cat >>"$HOME/.ucpp/settings" <<EOF
+	if [ "x$C_DRIVE" = "x" ]
+	then
+		echo "Please specify path to C:/ drive"
+		exit 1
+	else
+		gen_settings
+		cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
 EOF
+	fi
 fi
 
 if [ "$platform" = "linux-gccdist" ]
 then
+	gen_settings
 	cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
 EOF
@@ -282,6 +267,7 @@ fi
 
 if [ "$platform" = "windows-cygwin" ]
 then
+	gen_settings
 	cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
 EOF
@@ -289,6 +275,7 @@ fi
 
 if [ "$platform" = "windows-git" ]
 then
+	gen_settings
 	cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
 
