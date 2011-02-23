@@ -63,10 +63,19 @@ export CPP_PROJECT_NAME="$CPP_PROJECT_NAME"
 
 # Project root directory
 export CPP_PROJECT_ROOT_DIR="$CPP_PROJECT_ROOT_DIR"
+EOF
 
+if [ "x$DEPLOY_IP" = "x" ]
+then
+	:
+else
+	cat <<EOF >>.ucpp
 # IP to deploy robot code
 export DEPLOY_IP=$DEPLOY_IP
+EOF
+fi
 
+cat <<EOF >>.ucpp
 # Default configure method for "ucpp configure"
 #   Possible values: py, winpy, wr
 # Comment out to use global settings
