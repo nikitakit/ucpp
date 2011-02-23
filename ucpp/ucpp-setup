@@ -151,7 +151,7 @@ EOF
 
 cat >>"$HOME/.ucpp/settings" <<'EOF'
 
-export WIND_HOME=$C_DRIVE/WindRiver
+export WIND_HOME=${C_DRIVE}WindRiver
 export WIND_BASE=$WIND_HOME/vxworks-6.3
 export WIND_LIC_PROXY=$WIND_HOME/setup/x86-win32/bin/
 export LM_LICENSE_FILE=$WIND_HOME/license/zwrsLicense.lic
@@ -270,26 +270,26 @@ then
 	cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
 
-PYTHON="$C_DRIVE/Python27"
+PYTHON="${C_DRIVE}Python27"
 # Use pre-existing python version, if there is one
 if [ "x`which python`" = "x" ]
 then
-	if [ "x`which $C_DRIVE/Python27/python.exe`" = "x" ]
+	if [ "x`which ${C_DRIVE}Python27/python.exe`" = "x" ]
 	then
 		echo "Python not found"
 		echo "Install python or add it to system PATH"
 		exit 1
 	else
-		PYTHON="$C_DRIVE/Python27"
+		PYTHON="${C_DRIVE}Python27"
 	fi
 else
-	PYTHON=$($C_DRIVE/WindRiver/workbench-3.0/x86-win32/bin/dirname "`which python`" | sed "s|[Cc]:/|$C_DRIVE|g") 
+	PYTHON=$(${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin/dirname "`which python`" | sed "s|[Cc]:/|$C_DRIVE|g") 
 fi
 
 
 # Use the WindRiver verion of all unix commands
 export OLD_PATH="$PATH"
-export PATH="$C_DRIVE/WindRiver/workbench-3.0/x86-win32/bin"
+export PATH="${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin"
 export PATH="$PATH:$PYTHON"
 EOF
 
