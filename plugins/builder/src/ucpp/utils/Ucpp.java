@@ -44,7 +44,7 @@ public class Ucpp
 		}
 		else if (OSValidator.isWindows())
 		{
-			pr = rt.exec("C:\\cygwin\\bin\\bash.exe --login -i -c 'cd \"" + project.getLocation().toFile() + "\"; ucpp -s " + command + "'", null, project.getLocation().toFile());
+			pr = rt.exec("C:\\Program Files\\Git\\bin\\bash.exe --login -i -c 'cd \"" + project.getLocation().toFile() + "\"; ucpp -s " + command + "'", null, project.getLocation().toFile());
 		}
 		else
 		{
