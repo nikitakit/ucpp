@@ -28,6 +28,16 @@ public class Ucpp
 		return exe("configure " + (OSValidator.isWindows() ? "winpy" : "py"), project);
 	}
 
+	public static ReturnValue build(IProject project) throws Exception
+	{
+		return exe("make", project);
+	}
+
+	public static ReturnValue clean(IProject project) throws Exception
+	{
+		return exe("make clean", project);
+	}
+
 	private static ReturnValue exe(String command, IProject project) throws Exception
 	{
 		System.out.println("executing '" + command + "'");
