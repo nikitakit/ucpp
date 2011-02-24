@@ -4,3 +4,6 @@
 /plugins/builder/.settings
 /plugins/UcppLibs/.settings
 /runtime-EclipseApplication
+
+/plugins/FFTP/bin
+/plugins/FFTP/.settings
