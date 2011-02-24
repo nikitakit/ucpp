@@ -1,19 +1,16 @@
 Universal compiling scripts for FRC
 
+System Requirements:
+  For Linux: wine, wput
+  For Windows: MSYSgit or Cygwin
+
 Installation instructions:
  - Add the "ucpp/ucpp" folder to your system PATH
- - Run the ucpp setup script with appropriate options for your platform
-     Linux without WindRiver:
-       $ ucpp setup linux-gccdist -i
-     Linux with WindRiver, e.g. a dual-boot system:
-       $ ucpp setup linux-windriver -c <path-to-c-drive>
-     Windows using Cygwin:
-       $ ucpp setup windows-cygwin
-     Windows using MSYSgit command prompt:
-       $ ucpp setup windows-git
+ - Run the ucpp setup script
+       $ ucpp setup -t <team-number>
 
 Creating a project
- $ ucpp init -t <team-number>
+ $ ucpp init
         Configures the current directory as an FRC C++ project
         that deploys code to your team's robot.
 

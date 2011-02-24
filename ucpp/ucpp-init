@@ -63,10 +63,19 @@ export CPP_PROJECT_NAME="$CPP_PROJECT_NAME"
 
 # Project root directory
 export CPP_PROJECT_ROOT_DIR="$CPP_PROJECT_ROOT_DIR"
+EOF
 
+if [ "x$DEPLOY_IP" = "x" ]
+then
+	:
+else
+	cat <<EOF >>.ucpp
 # IP to deploy robot code
 export DEPLOY_IP=$DEPLOY_IP
+EOF
+fi
 
+cat <<EOF >>.ucpp
 # Default configure method for "ucpp configure"
 #   Possible values: py, winpy, wr
 # Comment out to use global settings
@@ -91,34 +100,38 @@ fi
 cat >Makefile <<'EOF'
 #UCPP makefile
 
-# For the default target, use the WindRiver makefile
+# Default target
 all: force
 	cd PPC603gnu && exec $(MAKE) -f Makefile_linux
 
-# TODO: insert targets that download gcc and WPIlib
+# Don't do anything for the "Makefile" target
+Makefile: ;
 
-# For all other targets, use the WindRiver makefile
+# Recursively run all other targets
 %: force
-	cd PPC603gnu && exec $(MAKE) -f Makefile_linux "$@"
+	cd PPC603gnu && exec $(MAKE) -f Makefile_linux "$*"
 
 force: ;
 
 EOF
 
+# Create a PPC603gnu directory, if needed
+mkdir -p PPC603gnu
+
 # On Windows, don't use the Linux Makefile
 case `uname` in 
 	windows32|MINGW*)
-	mv Makefile PPC603gnu/Makefile_tmp
-	cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" > Makefile
-	rm PPC603gnu/Makefile_tmp
-    ;;
+		mv Makefile PPC603gnu/Makefile_tmp
+		cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" > Makefile
+		rm PPC603gnu/Makefile_tmp
+		;;
 	CYGWIN*)
-	mv Makefile PPC603gnu/Makefile_tmp
-	cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" |\
-	sed -e 's/$(MAKE)/MAKE_CMD/' |\
-	sed -e "s|MAKE_CMD|$WIND_HOME/workbench-3.0/x86-win32/bin/make.exe|"> Makefile
-	rm PPC603gnu/Makefile_tmp
-    ;;
+		mv Makefile PPC603gnu/Makefile_tmp
+		cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" |\
+		sed -e 's/$(MAKE)/MAKE_CMD/' |\
+		sed -e "s|MAKE_CMD|$WIND_HOME/workbench-3.0/x86-win32/bin/make.exe|"> Makefile
+		rm PPC603gnu/Makefile_tmp
+		;;
 esac
 
 # User diagnostics

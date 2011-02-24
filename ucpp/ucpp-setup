@@ -1,84 +1,102 @@
 #! /bin/bash
 
+case `uname` in 
+	Linux*)
+		platform=linux-gccdist
+		C_DRIVE=$HOME/.ucpp/gccdist/
+		;;
+	windows32|MINGW*)
+		platform=windows-git
+		C_DRIVE=/c/
+		;;
+	CYGWIN*)
+		platform=windows-cygwin
+		C_DRIVE=/cygdrive/c/
+		;;
+esac
+
 usage()
 {
+	if [ "x$platform" = "x" ]
+	then
+		cat<<EOF
+Usage: ucpp setup PLATFORM [options]
+  Installs Universal C++ command-line tools.
+
+EOF
+	else
+		cat<<EOF
+Usage: ucpp setup [PLATFORM] [-t <team-number>]
+  Installs Universal C++ command-line tools.
+  The default platform is: $platform
+
+EOF
+	fi
 	cat <<EOF
-Usage: ucpp setup COMMAND [options]
-
-Command: help, -h, --help
-  Show this message
-
-Command: linux-windriver
-  Set up Linux system that relies on an existing WindRiver or
-  gccdist install
-    -c <path-to-c-drive>
+Options
+  -h, --help, help
+      Display this help and exit
+  -t <team-number>
+      Set default team number for deploying code
+  -c <path-to-c-drive>
+      For the linux-windriver platform ONLY:
         Set the path equivalent to the C:/ drive
         (the parent directory of the WindRiver folder)
         NOTE: requires trailing slash (/)
-    -t <team-number>
-        Set default team number for deploying code
+      
+Available Platforms:
+  linux-gccdist
+      Set up Linux system that automatically downloads
+      the compiler and the latest version of WPILib
+      Re-run this command to download WPILib updates
 
-Command: linux-gccdist
-  Set up Linux system that automatically downloads the compiler
-  and WPILib
-    -i
-        Install Linux/gccdist platform
-    -t <team-number>
-        Set default team number for deploying code
-    -b
-        Update gccdist and/or recompile WPILib
+  linux-windriver
+      Set up Linux system that relies on an existing
+      WindRiver or gccdist install
 
-Command: windows-cygwin
-  Set up a Windows build system that uses Cygwin
-   -t <team-number>
-       Set default team number for deploying code
+  windows-cygwin
+      Set up a Windows build system that uses Cygwin
 
-Command: windows-git
-  Set up a Windows build system that relies on WindRiver and
-  MSYSgit
-    -t <team-number>
-        Set default team number for deploying code
+  windows-git
+      Set up a Windows build system that relies on
+      WindRiver and MSYSgit
 EOF
 }
 
-C_DRIVE=
-DOWNLOAD_GCCDIST=no
-MAKE_WPILIB=no
-
-command=help
-
 if [ "x$1" = "xlinux-windriver" ]
 then
-	command=linux-windriver
+	platform=linux-windriver
+	C_DRIVE=
 	shift
 fi
 
 if [ "x$1" = "xlinux-gccdist" ]
 then
-	command=linux-gccdist
+	platform=linux-gccdist
+	C_DRIVE=$HOME/.ucpp/gccdist/
 	shift
 fi
 
 if [ "x$1" = "xwindows-cygwin" ]
 then
-	command=windows-cygwin
+	platform=windows-cygwin
 	C_DRIVE=/cygdrive/c/
 fi
 
 if [ "x$1" = "xwindows-git" ]
 then
-	command=windows-git
+	platform=windows-git
 	C_DRIVE=/c/
 	shift
 fi
 
-if [ "$command" = "help" ]
+if [ "x$1" = "xhelp" ] || [ "x$1" = "x--help" ] || [ "x$platform" = "x" ]
 then
 	usage
 	exit
 fi
 
-while getopts "ht:c:ib" opt; do
+while getopts "ht:c:" opt; do
 	case $opt in
 		h)
 			usage
@@ -99,13 +117,6 @@ EOF
 		c)
 			C_DRIVE=$OPTARG
 			;;
-		i)
-			C_DRIVE=$HOME/.ucpp/gccdist/
-			MAKE_WPILIB=yes
-			;;
-		b)
-			MAKE_WPILIB=yes
-			;;
 		\?)
 			echo "Invalid option: -$OPTARG" >&2
 			usage >&2
@@ -122,26 +133,26 @@ done
 
 gen_settings()
 {
-if [ -f "$HOME/.ucpp/settings" ]
-then
-	echo -n "UCPP user settings already exist. Overwrite? (y/N)"
-	if [ "x$UCPP_SILENT" = "xyes" ]
+	if [ -f "$HOME/.ucpp/settings" ]
 	then
-		exit
-	else
-		read answer
-		if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]
+		echo -n "UCPP user settings already exist. Overwrite? (y/N)"
+		if [ "x$UCPP_SILENT" = "xyes" ]
 		then
-			:
-		else
 			exit
+		else
+			read answer
+			if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]
+			then
+				:
+			else
+				exit
+			fi
 		fi
 	fi
-fi
 
-mkdir -p "$HOME/.ucpp"
+	mkdir -p "$HOME/.ucpp"
 
-cat >"$HOME/.ucpp/settings" <<EOF
+	cat >"$HOME/.ucpp/settings" <<EOF
 #! /bin/bash
 #  Also read by GNU make - use only variable defs here
 
@@ -160,9 +171,9 @@ export DEPLOY_IP=$DEPLOY_IP
 export C_DRIVE=$C_DRIVE
 EOF
 
-cat >>"$HOME/.ucpp/settings" <<'EOF'
+	cat >>"$HOME/.ucpp/settings" <<'EOF'
 
-export WIND_HOME=$C_DRIVE/WindRiver
+export WIND_HOME=${C_DRIVE}WindRiver
 export WIND_BASE=$WIND_HOME/vxworks-6.3
 export WIND_LIC_PROXY=$WIND_HOME/setup/x86-win32/bin/
 export LM_LICENSE_FILE=$WIND_HOME/license/zwrsLicense.lic
@@ -176,114 +187,118 @@ export COMPILER_DIR=$WIND_HOME/gnu/3.4.4-vxworks-6.3/x86-win32/bin
 EOF
 }
 
-make_wpilib()
+install_gccdist()
 {
-if [ -d "$HOME/.ucpp" ]
-then
-	:
-else
-	echo "ERROR: gccdist+WPILib not yet installed"
-	exit 66
-fi
+	cd $HOME/.ucpp
 
-SCRIPT_INSTALL_DIR=`dirname "$0"`
-MAKE='$(MAKE)'
-cat >$HOME/.ucpp/Makefile_gccdist <<EOF
-include settings
+	if [ -f gccdist.zip ]
+	then
+		echo "-----> gccdist download [DONE]"
+	else
+		echo "-----> gccdist download ..."
+		wget ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip -O gccdist.zip
+		echo "-----> gccdist download [DONE]"
+	fi
 
-wpilib: build-wpilib
-	mkdir -p gccdist/WindRiver/vxworks-6.3/target/lib
-	cp gccdist/WindRiver/vxworks-6.3/target/h/WPILib/PPC603gnu/WPILib/Debug/WPILib.a gccdist/WindRiver/vxworks-6.3/target/lib
+	if [ -d gccdist ]
+	then
+		echo "-----> gccdist install [DONE]"
+	else
+		echo "-----> gccdist install ..."
+		unzip -oDDqq gccdist.zip -d .
+		mkdir -p gccdist/WindRiver/license
+		cp gccdist/supp/zwrsLicense.lic gccdist/WindRiver/license/zwrsLicense.lic
+		echo "-----> gccdist install [DONE]"
+	fi
 
-build-wpilib: gccdist/WindRiver/vxworks-6.3/target/h/WPILib
-	cd gccdist/WindRiver/vxworks-6.3/target/h/WPILib && $SCRIPT_INSTALL_DIR/ucpp-init && $SCRIPT_INSTALL_DIR/ucpp-configure wpipy && cd PPC603gnu && exec $MAKE -f Makefile_linux
+	echo -n "-----> Checking for WPILib updates... "
+	wget -q http://firstforge.wpi.edu/sf/frs/do/viewSummary/projects.wpilib/frs -O - | grep 'WPILib C++ update' | sed "s/.*<a href=\"\([^\"]*\)\">.*/http:\/\/firstforge.wpi.edu\1/" | uniq | sed "s/;.*//" > wpilib_page1.url
+	wget `cat wpilib_page1.url` -q -O - | grep "rel[0-9][0-9]*" | grep href | sed "s/.*\(rel[0-9]*\)/\1/" | sort -r | head -n 1 | sed "s/.*<a href=\"\([^\"]*\).*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page2.url
+	wget `cat wpilib_page2.url` -q -O - | grep "\.exe\s*<\/a>" | sed "s/.*<a href=\"\([^\"]*\)\".*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page3.url
 
-clean-project:
-	rm -f gccdist/WindRiver/vxworks-6.3/target/h/WPILib/.ucpp
+	touch wpilib_last_downloaded.url
+	if [ "x`cat wpilib_page3.url`" == "x`cat wpilib_last_downloaded.url`" ]
+	then
+		echo "no new updates"
+	else
+		echo "updates available"
+		echo "-----> WPILib download ..."
+		wget `cat wpilib_page3.url` -O wpilibupdate.exe
+		mv wpilib_page3.url wpilib_last_downloaded.url
+		echo "-----> WPILib download [DONE]"
+	fi
 
-gccdist: gccdist.zip
-	unzip -oDDqq gccdist.zip -d .
-	mkdir -p gccdist/WindRiver/license
-	cp gccdist/supp/zwrsLicense.lic gccdist/WindRiver/license/zwrsLicense.lic
+	echo "-----> WPILib install ..."
+	cd gccdist/WindRiver
+	echo "A" | unzip ../../wpilibupdate.exe > unziplog.txt 2>/dev/null
+	cd ../../
+	rm -f wpilib_page1.url wpilib_page2.url wpilib_page3.url
+	echo "-----> WPILib install [DONE]"
 
+	echo "-----> [FINISHED]"
+	echo -n "WPILib version: "
+	cat gccdist/WindRiver/unziplog.txt | grep "inflating: WPILib/.*\.zip" | sed "s/.*\(WPILib\/.*\.zip\).*/\1/"
 
-gccdist.zip:
-	wget ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip -O gccdist.zip
-
-gccdist/WindRiver/WPILib/WPILibC++Source20110106rev2242.zip: gccdist
-	mkdir -p gccdist/WindRiver/WPILib
-	wget http://team3021.com/files/programming/WPILibC++Source20110106rev2242.zip -O gccdist/WindRiver/WPILib/WPILibC++Source20110106rev2242.zip 
-
-gccdist/WindRiver/vxworks-6.3/target/h/WPILib: gccdist/WindRiver/WPILib/WPILibC++Source20110106rev2242.zip
-	unzip -oDDqq gccdist/WindRiver/WPILib/WPILibC++Source20110106rev2242.zip -d gccdist/WindRiver/vxworks-6.3/target/h || [ -d gccdist/WindRiver/WPILib ]
-
-EOF
-
-cd $HOME/.ucpp
-
-echo "Downloading gccdist+WPILib and compiling WPILib..."
-make -f Makefile_gccdist clean-project
-make -f Makefile_gccdist -j2
 }
 
-
-
-if [ "x$C_DRIVE" = "x" ]
+if [ "$platform" = "linux-windriver" ]
 then
-	if [ "$command" = "linux-windriver" ]
+	if [ "x$C_DRIVE" = "x" ]
 	then
 		echo "Please specify path to C:/ drive"
 		exit 1
+	else
+		gen_settings
+		cat >>"$HOME/.ucpp/settings" <<EOF
+DEFAULT_CONFIGURE_COMMAND=py
+EOF
 	fi
-	if [ "$command" = "linux-gccdist" ]
-	then
-		if [ "$MAKE_WPILIB" = "no" ]
-		then
-			echo "Specify either '-i' or '-b'"
-			exit 1
-		fi
-	fi
-else
-	gen_settings
 fi
 
-if [ "$command" = "linux-windriver" ] || [ "$command" = "linux-gccdist" ]
+if [ "$platform" = "linux-gccdist" ]
 then
+	gen_settings
 	cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
 EOF
+
+	install_gccdist
 fi
 
-if [ "$MAKE_WPILIB" = "yes" ]
+if [ "$platform" = "windows-cygwin" ]
 then
-	make_wpilib
+	gen_settings
+	cat >>"$HOME/.ucpp/settings" <<'EOF'
+DEFAULT_CONFIGURE_COMMAND=winpy
+EOF
 fi
 
-if [ "$command" = "windows-git" ]
+if [ "$platform" = "windows-git" ]
 then
+	gen_settings
 	cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
 
-PYTHON="$C_DRIVE/Python27"
+PYTHON="${C_DRIVE}Python27"
 # Use pre-existing python version, if there is one
 if [ "x`which python`" = "x" ]
 then
-	if [ "x`which $C_DRIVE/Python27/python.exe`" = "x" ]
+	if [ "x`which ${C_DRIVE}Python27/python.exe`" = "x" ]
 	then
 		echo "Python not found"
 		echo "Install python or add it to system PATH"
 		exit 1
 	else
-		PYTHON="$C_DRIVE/Python27"
+		PYTHON="${C_DRIVE}Python27"
 	fi
 else
-	PYTHON=$($C_DRIVE/WindRiver/workbench-3.0/x86-win32/bin/dirname "`which python`" | sed "s|[Cc]:/|$C_DRIVE|g") 
+	PYTHON=$(${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin/dirname "`which python`" | sed "s|[Cc]:/|$C_DRIVE|g") 
 fi
 
 
 # Use the WindRiver verion of all unix commands
 export OLD_PATH="$PATH"
-export PATH="$C_DRIVE/WindRiver/workbench-3.0/x86-win32/bin"
+export PATH="${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin"
 export PATH="$PATH:$PYTHON"
 EOF
 
