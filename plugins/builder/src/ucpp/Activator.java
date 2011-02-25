@@ -70,7 +70,23 @@ public class Activator extends AbstractUIPlugin
 	public static int GetTeamNumber(IProject project)
 	{
 		// export DEPLOY_IP=10.4.51.2
-		String f = GetFileContents(project.getLocation().toString() + "/.ucpp");
+		String f = null;
+		try
+		{
+			f = GetFileContents(project.getLocation().toString() + "/.ucpp");
+		}
+		catch (Exception xe)
+		{
+			try
+			{
+				f = GetFileContents(System.getProperty("user.home")+File.separator+".ucpp"+File.separator+"settings");
+			}
+			catch (Exception ex)
+			{
+				System.out.println("using team 0, invalid find");
+				return 0;
+			}
+		}
 		Pattern p = Pattern.compile("export DEPLOY_IP=10\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.2");
 		Matcher m = p.matcher(f);
 		m.find();
