@@ -28,7 +28,22 @@ public class Ucpp
 		return exe("configure " + (OSValidator.isWindows() ? "winpy" : "py"), project);
 	}
 
+	public static ReturnValue build(IProject project) throws Exception
+	{
+		return exec("make", project);
+	}
+
+	public static ReturnValue clean(IProject project) throws Exception
+	{
+		return exec("make clean", project);
+	}
+
 	private static ReturnValue exe(String command, IProject project) throws Exception
+	{
+		return exec("ucpp -s "+command, project);
+	}
+	
+	private static ReturnValue exec(String command, IProject project) throws Exception
 	{
 		System.out.println("executing '" + command + "'");
 
@@ -40,11 +55,11 @@ public class Ucpp
 			String path = System.getenv("PATH");
 			if (!path.contains("ucpp"))
 				path = System.getenv("HOME") + "/ucpp/ucpp:" + path;
-			pr = rt.exec("ucpp -s " + command, new String[] { "PATH=" + path }, project.getLocation().toFile());
+			pr = rt.exec(command, new String[] { "PATH=" + path }, project.getLocation().toFile());
 		}
 		else if (OSValidator.isWindows())
 		{
-			pr = rt.exec("C:\\cygwin\\bin\\bash.exe --login -i -c 'cd \"" + project.getLocation().toFile() + "\"; ucpp -s " + command + "'", null, project.getLocation().toFile());
+			pr = rt.exec("C:\\Program Files\\Git\\bin\\bash.exe --login -i -c 'cd \"" + project.getLocation().toFile() + "\"; " + command + "'", null, project.getLocation().toFile());
 		}
 		else
 		{

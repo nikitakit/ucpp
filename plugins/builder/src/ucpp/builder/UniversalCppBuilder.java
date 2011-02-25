@@ -169,6 +169,8 @@ public class UniversalCppBuilder extends IncrementalProjectBuilder
 			try
 			{
 				Ucpp.makefile(getProject());
+				Ucpp.clean(getProject());
+				Ucpp.build(getProject());
 			}
 			catch (Exception e)
 			{

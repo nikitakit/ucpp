@@ -182,8 +182,8 @@ CPP_PROJECT_NAME_partialImage/$(MODE_DIR)/% : OBJ_DIR := CPP_PROJECT_NAME_partia
 """
 
 common_section=common_section.replace("CPP_PROJECT_NAME",CPP_PROJECT_NAME)
-common_section=common_section.replace("CPP_PROJECT_ROOT_DIR",CPP_PROJECT_ROOT_DIR)
-common_section=common_section.replace("CPP_PROJECT_WS_ROOT_DIR",CPP_PROJECT_WS_ROOT_DIR)
+common_section=common_section.replace("CPP_PROJECT_ROOT_DIR",CPP_PROJECT_ROOT_DIR.replace(" ", "\\ "))
+common_section=common_section.replace("CPP_PROJECT_WS_ROOT_DIR",CPP_PROJECT_WS_ROOT_DIR.replace(" ", "\\ "))
 
 
 # individual files section
@@ -196,7 +196,7 @@ CPP_PROJECT_NAME_partialImage/$(MODE_DIR)/Objects/CPP_PROJECT_NAME/FILENAME.o : 
 
 """
     this_file=this_file.replace("CPP_PROJECT_NAME", CPP_PROJECT_NAME)
-    this_file=this_file.replace("CPP_PROJECT_ROOT_DIR", CPP_PROJECT_ROOT_DIR)
+    this_file=this_file.replace("CPP_PROJECT_ROOT_DIR", CPP_PROJECT_ROOT_DIR.replace(" ", "\\ "))
     this_file=this_file.replace("FILENAME", filename)
 
     file_section+=this_file
