@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description name="Universal C++ for FRC Eclipse Update Site" url="http://ucpp.thecatattack.org/">
+      Universal C++ for FRC Eclipse Update Site
+   </description>
+   <feature url="features/UniversalCpp_0.0.1.jar" id="UniversalCpp" version="0.0.1" os="linux,macosx,win32">
+      <category name="Universal C++ for FRC"/>
+   </feature>
+   <category-def name="Universal C++ for FRC" label="Universal C++ for FRC">
+      <description>
+         Universal C++ development tools for FRC in Eclipse
+      </description>
+   </category-def>
+</site>

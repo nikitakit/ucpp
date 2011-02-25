@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Builder
+Bundle-Name: Ucpp Builder
 Bundle-SymbolicName: builder;singleton:=true
-Bundle-Version: 0.0.0.1
+Bundle-Version: 0.0.1.0
 Bundle-Activator: ucpp.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
