@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="UniversalCpp"
+      label="Universal C++ for FRC"
+      version="0.0.1"
+      os="linux,macosx,win32">
+
+   <description url="http://firstforge.wpi.edu/sf/projects/ucpp">
+      The Universal C++ programming environment for FRC allows anyone to compile FRC C++ code without using WindRiver, enabling you to work on Window, Mac, and Linux, with Eclipse plugins or makefiles.
+   </description>
+
+   <url>
+      <update label="Universal C++ for FRC" url="http://ucpp.thecatattack.org/"/>
+   </url>
+
+   <plugin
+         id="builder"
+         download-size="0"
+         install-size="0"
+         version="0.0.1.0"/>
+
+   <plugin
+         id="UcppLibs"
+         download-size="0"
+         install-size="0"
+         version="0.0.1"/>
+
+</feature>
