@@ -5,6 +5,8 @@ import java.io.InputStreamReader;
 
 import org.eclipse.core.resources.IProject;
 
+import ucpp.Activator;
+
 public class Ucpp
 {
 	public static ReturnValue setup(String options, IProject project) throws Exception
@@ -45,7 +47,7 @@ public class Ucpp
 	
 	private static ReturnValue exec(String command, IProject project) throws Exception
 	{
-		System.out.println("executing '" + command + "'");
+		Activator.out.println("executing '" + command + "'");
 
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
@@ -63,7 +65,7 @@ public class Ucpp
 		}
 		else
 		{
-			System.out.println("UNSUPPORTED SYSTEM!");
+			Activator.out.println("UNSUPPORTED SYSTEM!");
 			throw new Exception("UNSUPPORTED SYSTEM!");
 		}
 
@@ -73,13 +75,13 @@ public class Ucpp
 
 		while ((line = input.readLine()) != null)
 		{
-			System.out.println(line);
+			Activator.out.println(line);
 			lines += line + ReturnValue.lineSeparator;
 		}
 
 		int exitVal = pr.waitFor();
 		if (exitVal != 0)
-			System.out.println("Exited with error code " + exitVal);
+			Activator.out.println("Exited with error code " + exitVal);
 
 		return new ReturnValue(exitVal, lines);
 	}
