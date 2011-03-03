@@ -11,7 +11,7 @@ public class Ucpp
 {
 	public static ReturnValue setup(String options, IProject project) throws Exception
 	{
-		return exe("setup " + options, project);
+		return ucpp("setup " + options, project);
 	}
 
 	public static void setup(IProject project)
@@ -22,12 +22,12 @@ public class Ucpp
 
 	public static ReturnValue init(int team, IProject project) throws Exception
 	{
-		return exe("init -t " + String.valueOf(team), project);
+		return ucpp("init -t " + String.valueOf(team), project);
 	}
 
 	public static ReturnValue makefile(IProject project) throws Exception
 	{
-		return exe("configure " + (OSValidator.isWindows() ? "winpy" : "py"), project);
+		return ucpp("configure " + (OSValidator.isWindows() ? "winpy" : "py"), project);
 	}
 
 	public static ReturnValue build(IProject project) throws Exception
@@ -40,7 +40,7 @@ public class Ucpp
 		return exec("make clean", project);
 	}
 
-	private static ReturnValue exe(String command, IProject project) throws Exception
+	private static ReturnValue ucpp(String command, IProject project) throws Exception
 	{
 		return exec("ucpp -s "+command, project);
 	}
