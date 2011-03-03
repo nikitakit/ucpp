@@ -56,12 +56,13 @@ public class Ucpp
 		{
 			String path = System.getenv("PATH");
 			if (!path.contains("ucpp"))
-				path = System.getenv("HOME") + "/ucpp/ucpp:" + path;
-			pr = rt.exec(command, new String[] { "PATH=" + path }, project.getLocation().toFile());
+				pr = rt.exec("~/.bashrc && "+command, null, project.getLocation().toFile());
+			else
+				pr = rt.exec(command, null, project.getLocation().toFile());
 		}
 		else if (OSValidator.isWindows())
 		{
-			pr = rt.exec("C:\\Program Files\\Git\\bin\\bash.exe --login -i -c 'cd \"" + project.getLocation().toFile() + "\"; " + command + "'", null, project.getLocation().toFile());
+			pr = rt.exec("C:\\Program Files\\Git\\bin\\bash.exe --login -i -c 'cd \"" + project.getLocation().toFile() + "\" && " + command + "'", null, project.getLocation().toFile());
 		}
 		else
 		{
