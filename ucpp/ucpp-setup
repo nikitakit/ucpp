@@ -139,6 +139,9 @@ gen_settings()
 		if [ "x$UCPP_SILENT" = "xyes" ]
 		then
 			exit
+		elif [ "x$UCPP_FORCE" == "xyes" ]
+		then
+			echo y
 		else
 			read answer
 			if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]

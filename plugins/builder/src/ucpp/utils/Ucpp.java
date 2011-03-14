@@ -42,7 +42,7 @@ public class Ucpp
 
 	private static ReturnValue ucpp(String command, IProject project) throws Exception
 	{
-		return exec("ucpp -s "+command, project);
+		return exec("ucpp -y "+command, project);
 	}
 	
 	private static ReturnValue exec(String command, IProject project) throws Exception
