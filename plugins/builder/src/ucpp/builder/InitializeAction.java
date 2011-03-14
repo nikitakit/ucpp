@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 
+import ucpp.Activator;
 import ucpp.utils.Ucpp;
 
 public class InitializeAction implements IObjectActionDelegate
@@ -76,7 +77,7 @@ public class InitializeAction implements IObjectActionDelegate
 		}
 		catch (Exception e)
 		{
-			System.out.println(e.toString());
+			Activator.out.println(e.toString());
 			e.printStackTrace();
 		}
 	}

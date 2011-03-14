@@ -8,10 +8,11 @@ then
 	export UCPP_SILENT=yes
 	cmd="$1"
 	shift
-	if which ucpp-$cmd >& /dev/null
-	then
-		exec ucpp-$cmd "$@"
-	fi
+elif [ "x$cmd" = "x-y" ]
+then
+	export UCPP_FORCE=yes
+	cmd="$1"
+	shift
 fi
 
 if which ucpp-$cmd >& /dev/null
@@ -20,9 +21,10 @@ then
 fi
 
 cat <<EOF
-Usage: ucpp [-s] COMMAND [ARGS]
+Usage: ucpp [-s|-y] COMMAND [ARGS]
 
   -s        Don't prompt for imput, just exit
+  -y		Force yes on prompts
 
 Commands:
   setup     Set global ucpp settings (required before running other commands)
