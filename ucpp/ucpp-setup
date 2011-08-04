@@ -103,7 +103,7 @@ while getopts "ht:c:" opt; do
 			exit
 			;;
 		t)
-			DEPLOY_IP=$(python <<EOF 2>&1 | grep "10." 
+			DEPLOY_IP=$(python2 <<EOF 2>&1 | grep "10." 
 n=int("$OPTARG")
 print "10.%i.%i.2\n" % (n//100, n%100)
 EOF
@@ -284,7 +284,7 @@ DEFAULT_CONFIGURE_COMMAND=winpy
 
 PYTHON="${C_DRIVE}Python27"
 # Use pre-existing python version, if there is one
-if [ "x`which python`" = "x" ]
+if [ "x`which python2`" = "x" ]
 then
 	if [ "x`which ${C_DRIVE}Python27/python.exe`" = "x" ]
 	then
@@ -295,7 +295,7 @@ then
 		PYTHON="${C_DRIVE}Python27"
 	fi
 else
-	PYTHON=$(${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin/dirname "`which python`" | sed "s|[Cc]:/|$C_DRIVE|g") 
+	PYTHON=$(${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin/dirname "`which python2`" | sed "s|[Cc]:/|$C_DRIVE|g") 
 fi
 
 
