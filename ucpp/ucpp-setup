@@ -103,12 +103,10 @@ while getopts "ht:c:" opt; do
 			exit
 			;;
 		t)
-			DEPLOY_IP=$(python2 <<EOF 2>&1 | grep "10." 
-n=int("$OPTARG")
-print "10.%i.%i.2\n" % (n//100, n%100)
-EOF
-			)
-			if [ "x$DEPLOY_IP" = "x" ]
+			HUNDREDS=`expr $OPTARG / 100`
+			UNDER_HUNDREDS=`expr $OPTARG % 100`
+			DEPLOY_IP="10.${HUNDREDS}.${UNDER_HUNDREDS}.2"
+			if [ "x$DEPLOY_IP" = "x10...2" ]
 			then
 				echo "Invalid team number"
 				exit 1
@@ -244,6 +242,38 @@ install_gccdist()
 
 }
 
+linux_find_python2_settings()
+{
+    cat >>"$HOME/.ucpp/settings" <<EOF
+#find python major version 2
+if which python
+then
+	UCPP_PYTHON_MAJOR_VERSION=\$( python --version 2>&1 | \\
+		sed "s/Python \([0-9]\+\).*/\1/" )
+	if [ "\$UCPP_PYTHON_MAJOR_VERSION" = "2" ]
+	then
+		PYTHON=\`which python\`
+	elif which python2
+	then
+		PYTHON=\`which python2\`
+	elif which python2.7
+	then
+		PYTHON=\`which python2.7\`
+	elif which python2.6
+	then
+		PYTHON=\`which python2.6\`
+	fi
+fi
+if [ "x\$PYTHON" = "x" ]
+then
+        echo "Python not found"
+	echo "Install python or add it to system PATH"
+	exit 1
+fi
+
+EOF
+}
+
 if [ "$platform" = "linux-windriver" ]
 then
 	if [ "x$C_DRIVE" = "x" ]
@@ -255,6 +285,7 @@ then
 		cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
 EOF
+		linux_find_python2_settings
 	fi
 fi
 
@@ -264,7 +295,7 @@ then
 	cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
 EOF
-
+	linux_find_python2_settings
 	install_gccdist
 fi
 
@@ -273,6 +304,7 @@ then
 	gen_settings
 	cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
+PYTHON=python2
 EOF
 fi
 
