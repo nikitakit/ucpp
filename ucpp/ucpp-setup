@@ -252,19 +252,19 @@ then
 		sed "s/Python \([0-9]\+\).*/\1/" )
 	if [ "\$UCPP_PYTHON_MAJOR_VERSION" = "2" ]
 	then
-		PYTHON=\`which python\`
+		UCPP_PYTHON_BIN=\`which python\`
 	elif which python2
 	then
-		PYTHON=\`which python2\`
+		UCPP_PYTHON_BIN=\`which python2\`
 	elif which python2.7
 	then
-		PYTHON=\`which python2.7\`
+		UCPP_PYTHON_BIN=\`which python2.7\`
 	elif which python2.6
 	then
-		PYTHON=\`which python2.6\`
+		UCPP_PYTHON_BIN=\`which python2.6\`
 	fi
 fi
-if [ "x\$PYTHON" = "x" ]
+if [ "x\$UCPP_PYTHON_BIN" = "x" ]
 then
         echo "Python not found"
 	echo "Install python or add it to system PATH"
@@ -304,7 +304,7 @@ then
 	gen_settings
 	cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
-PYTHON=python2
+UCPP_PYTHON_BIN=python2
 EOF
 fi
 
@@ -314,7 +314,6 @@ then
 	cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
 
-PYTHON="${C_DRIVE}Python27"
 # Use pre-existing python version, if there is one
 if [ "x`which python2`" = "x" ]
 then
@@ -324,17 +323,17 @@ then
 		echo "Install python or add it to system PATH"
 		exit 1
 	else
-		PYTHON="${C_DRIVE}Python27"
+		UCPP_PYTHON_DIR="${C_DRIVE}Python27"
 	fi
 else
-	PYTHON=$(${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin/dirname "`which python2`" | sed "s|[Cc]:/|$C_DRIVE|g") 
+	UCPP_PYTHON_DIR=$(${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin/dirname "`which python2`" | sed "s|[Cc]:/|$C_DRIVE|g") 
 fi
 
 
 # Use the WindRiver verion of all unix commands
 export OLD_PATH="$PATH"
 export PATH="${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin"
-export PATH="$PATH:$PYTHON"
+export PATH="$PATH:$UCPP_PYTHON_DIR"
 EOF
 
 	if [ "x`which make`" = "x" ]

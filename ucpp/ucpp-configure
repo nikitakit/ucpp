@@ -195,7 +195,7 @@ if [ "$command" = "py" ]
 then
 	echo -n "Manually generating Linux Makefile... "
 	mkdir -p PPC603gnu
-	$PYTHON `dirname $0`/ucpp_gen_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
+	${UCPP_PYTHON_BIN} `dirname $0`/ucpp_gen_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
 	add_deploy_target >> PPC603gnu/Makefile_linux
 	echo "Done"
 fi
@@ -204,7 +204,7 @@ if [ "$command" = "winpy" ]
 then
 	echo -n "Manually generating Windows Makefile... "
 	mkdir -p PPC603gnu
-	$PYTHON "`dirname "$0" | sed "s|$C_DRIVE|C:/|"`/ucpp_gen_makefile.py" | modify_win_makefile > PPC603gnu/Makefile
+	${UCPP_PYTHON_BIN} "`dirname "$0" | sed "s|$C_DRIVE|C:/|"`/ucpp_gen_makefile.py" | modify_win_makefile > PPC603gnu/Makefile
 	add_deploy_target_no_wput >> PPC603gnu/Makefile
 	echo "Done"
 fi
@@ -228,7 +228,7 @@ if [ "$command" = "wpipy" ]
 then
 	echo -n "Manually generating WPILib Linux Makefile... "
 	mkdir -p PPC603gnu
-	$PYTHON `dirname "$0"`/ucpp_gen_wpilib_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
+	${UCPP_PYTHON_BIN} `dirname "$0"`/ucpp_gen_wpilib_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
 	echo "Done"
 fi
 
@@ -236,6 +236,6 @@ if [ "$command" = "wpiwinpy" ]
 then
 	echo -n "Manually generating WPILib Windows Makefile... "
 	mkdir -p PPC603gnu
-	$PYTHON `dirname "$0"`/ucpp_gen_wpilib_makefile.py > PPC603gnu/Makefile
+	${UCPP_PYTHON_BIN} `dirname "$0"`/ucpp_gen_wpilib_makefile.py > PPC603gnu/Makefile
 	echo "Done"
 fi
