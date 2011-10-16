@@ -244,34 +244,34 @@ install_gccdist()
 
 linux_find_python2_settings()
 {
-    cat >>"$HOME/.ucpp/settings" <<EOF
 #find python major version 2
 if which python
 then
-	UCPP_PYTHON_MAJOR_VERSION=\$( python --version 2>&1 | \\
+	UCPP_PYTHON_MAJOR_VERSION=$( python --version 2>&1 | \
 		sed "s/Python \([0-9]\+\).*/\1/" )
-	if [ "\$UCPP_PYTHON_MAJOR_VERSION" = "2" ]
+	if [ "$UCPP_PYTHON_MAJOR_VERSION" = "2" ]
 	then
-		UCPP_PYTHON_BIN=\`which python\`
+		UCPP_PYTHON_BIN=`which python`
 	elif which python2
 	then
-		UCPP_PYTHON_BIN=\`which python2\`
+		UCPP_PYTHON_BIN=`which python2`
 	elif which python2.7
 	then
-		UCPP_PYTHON_BIN=\`which python2.7\`
+		UCPP_PYTHON_BIN=`which python2.7`
 	elif which python2.6
 	then
-		UCPP_PYTHON_BIN=\`which python2.6\`
+		UCPP_PYTHON_BIN=`which python2.6`
 	fi
 fi
-if [ "x\$UCPP_PYTHON_BIN" = "x" ]
+if [ "x$UCPP_PYTHON_BIN" = "x" ]
 then
         echo "Python not found"
 	echo "Install python or add it to system PATH"
+	echo "ucpp-setup FAILED"
 	exit 1
 fi
 
-EOF
+    echo "UCPP_PYTHON_BIN=\"\${UCPP_PYTHON_BIN}\"" >>"${HOME}/.ucpp/settings"
 }
 
 if [ "$platform" = "linux-windriver" ]
