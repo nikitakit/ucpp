@@ -245,33 +245,34 @@ install_gccdist()
 linux_find_python2_settings()
 {
 #find python major version 2
-    if which python
+    echo "-----> Detecting python ..."
+    if [ "x`which python`" != "x" ]
     then
 	UCPP_PYTHON_MAJOR_VERSION=$( python --version 2>&1 | \
 	    sed "s/Python \([0-9]\+\).*/\1/" )
 	if [ "$UCPP_PYTHON_MAJOR_VERSION" = "2" ]
 	then
 	    UCPP_PYTHON_BIN=`which python`
-	elif which python2
+	elif [ "x`which python2`" != "x" ]
 	then
 	    UCPP_PYTHON_BIN=`which python2`
-	elif which python2.7
+	elif [ "x`which python2.7`" != "x" ]
 	then
 	    UCPP_PYTHON_BIN=`which python2.7`
-	elif which python2.6
+	elif [ "x`which python2.6`" != "x" ]
 	then
 	    UCPP_PYTHON_BIN=`which python2.6`
 	fi
     fi
     if [ "x$UCPP_PYTHON_BIN" = "x" ]
     then
-        echo "Python not found"
-	echo "Install python or add it to system PATH"
-	echo "ucpp-setup FAILED"
-	exit 1
+        echo "Python 2.x not found"
+	    echo "Install python 2 or add it to system PATH"
+	    echo "ucpp-setup FAILED"
+	    exit 1
     fi
 
-    echo "${UCPP_PYTHON_BIN}"
+    echo "-----> Python 2 found at: ${UCPP_PYTHON_BIN} [DONE]"
 }
 
 ms_windows_find_python2_dir()
@@ -303,10 +304,10 @@ then
 		exit 1
 	else
 		gen_settings
-		UCPP_PYTHON_BIN=$( linux_find_python2_settings )
+		linux_find_python2_settings
 		cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
-UCPP_PYTHON_BIN=\"${UCPP_PYTHON_BIN}\"
+UCPP_PYTHON_BIN="${UCPP_PYTHON_BIN}"
 EOF
 
 
@@ -316,10 +317,11 @@ fi
 if [ "$platform" = "linux-gccdist" ]
 then
 	gen_settings
+	linux_find_python2_settings
 	cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
+UCPP_PYTHON_BIN="${UCPP_PYTHON_BIN}"
 EOF
-	linux_find_python2_settings
 	install_gccdist
 fi
 

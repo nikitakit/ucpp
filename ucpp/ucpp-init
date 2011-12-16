@@ -12,15 +12,36 @@ Options:
 EOF
 }
 
-if [ "x$1" = "x-h" ]
-then
-	usage
-fi
+source ucpp_settings
 
-if [ "x$1" = "x--help" ]
-then
-	usage
-fi
+while getopts "ht:" opt; do
+	case $opt in
+		h)
+			usage
+			exit
+			;;
+		t)
+			HUNDREDS=`expr $OPTARG / 100`
+			UNDER_HUNDREDS=`expr $OPTARG % 100`
+			DEPLOY_IP="10.${HUNDREDS}.${UNDER_HUNDREDS}.2"
+			if [ "x$DEPLOY_IP" = "x10...2" ]
+			then
+				echo "Invalid team number"
+				exit 1
+			fi
+			;;
+		\?)
+			echo "Invalid option: -$OPTARG" >&2
+			usage >&2
+			exit 1
+			;;
+		:)
+			echo "Option -$OPTARG requires an argument." >&2
+			usage >&2
+			exit 1
+			;;
+	esac
+done
 
 if [ -f .ucpp ]
 then
@@ -42,15 +63,6 @@ then
 		fi
 	fi
 fi
-
-source ucpp_settings
-
-DEPLOY_IP=$( ${UCPP_PYTHON_BIN} <<EOF 2>&1 | grep "10."
-s="$@"
-n=int(s.split("-t")[1])
-print "10.%i.%i.2\n" % (n//100, n%100)
-EOF
-)
 
 export CPP_PROJECT_WS_ROOT_DIR=$(dirname "`pwd`"| sed "s|$C_DRIVE|C:/|g")
 export CPP_PROJECT_ROOT_DIR=$(pwd | sed "s|$C_DRIVE|C:/|g")
