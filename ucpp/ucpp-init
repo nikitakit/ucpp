@@ -1,5 +1,11 @@
 #! /bin/bash
 
+die()
+{
+	echo "$1"
+	exit 1
+}
+
 usage()
 {
 	cat <<EOF
@@ -26,8 +32,7 @@ while getopts "ht:-:" opt; do
 			DEPLOY_IP="10.${HUNDREDS}.${UNDER_HUNDREDS}.2"
 			if [ "x$DEPLOY_IP" = "x10...2" ]
 			then
-				echo "Invalid team number"
-				exit 1
+				die "Invalid team number"
 			fi
 			;;
 		-)
@@ -42,7 +47,6 @@ while getopts "ht:-:" opt; do
 					exit 1
 					;;
 			esac
-			echo "Invalid option: --$OPTARG" >&2
 			;;
 		\?)
 			echo "Invalid option: -$OPTARG" >&2
@@ -153,7 +157,7 @@ EOF
 mkdir -p PPC603gnu
 
 # On Windows, don't use the Linux Makefile
-case `uname` in 
+case `uname` in
 	windows32|MINGW*)
 		mv Makefile PPC603gnu/Makefile_tmp
 		cat PPC603gnu/Makefile_tmp | sed -e "s/Makefile_linux/Makefile/g" > Makefile

@@ -1,19 +1,10 @@
 #! /bin/bash
 
-case `uname` in 
-	Linux*)
-		platform=linux-gccdist
-		C_DRIVE=$HOME/.ucpp/gccdist/
-		;;
-	windows32|MINGW*)
-		platform=windows-git
-		C_DRIVE=/c/
-		;;
-	CYGWIN*)
-		platform=windows-cygwin
-		C_DRIVE=/cygdrive/c/
-		;;
-esac
+die()
+{
+	echo "$1"
+	exit 1
+}
 
 usage()
 {
@@ -32,6 +23,7 @@ Usage: ucpp setup [PLATFORM] [-t <team-number>]
 
 EOF
 	fi
+
 	cat <<EOF
 Options
   -h, --help
@@ -43,7 +35,7 @@ Options
         Set the path equivalent to the C:/ drive
         (the parent directory of the WindRiver folder)
         NOTE: requires trailing slash (/)
-      
+
 Available Platforms:
   linux-gccdist
       Set up Linux system that automatically downloads
@@ -63,6 +55,21 @@ Available Platforms:
 EOF
 }
 
+case `uname` in 
+	Linux*)
+		platform=linux-gccdist
+		C_DRIVE=$HOME/.ucpp/gccdist/
+		;;
+	windows32|MINGW*)
+		platform=windows-git
+		C_DRIVE=/c/
+		;;
+	CYGWIN*)
+		platform=windows-cygwin
+		C_DRIVE=/cygdrive/c/
+		;;
+esac
+
 if [ "x$1" = "xlinux-windriver" ]
 then
 	platform=linux-windriver
@@ -81,6 +88,7 @@ if [ "x$1" = "xwindows-cygwin" ]
 then
 	platform=windows-cygwin
 	C_DRIVE=/cygdrive/c/
+	shift
 fi
 
 if [ "x$1" = "xwindows-git" ]
@@ -92,8 +100,8 @@ fi
 
 if [ "x$platform" = "x" ]
 then
-	usage
-	exit
+	usage >&2
+	exit 1
 fi
 
 while getopts "ht:c:-:" opt; do
@@ -108,8 +116,7 @@ while getopts "ht:c:-:" opt; do
 			DEPLOY_IP="10.${HUNDREDS}.${UNDER_HUNDREDS}.2"
 			if [ "x$DEPLOY_IP" = "x10...2" ]
 			then
-				echo "Invalid team number"
-				exit 1
+				die "Invalid team number"
 			fi
 			;;
 		c)

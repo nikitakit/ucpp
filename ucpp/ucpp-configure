@@ -1,5 +1,11 @@
 #! /bin/bash
 
+die()
+{
+	echo "$1"
+	exit 1
+}
+
 usage()
 {
 	cat <<EOF
@@ -66,11 +72,10 @@ case "x$HAVE_CPP_PROJECT" in
 	xno)
 		echo "Current directory is not configured as a C++ project"
 		echo "Run ucpp init -t <team-number>"
-		exit 66
+		exit 1
 		;;
 	x)
-		echo "ERROR: failed to load settings"
-		exit 66
+		die "ERROR: failed to load settings"
 		;;
 esac
 
@@ -220,7 +225,7 @@ then
 	else
 		echo "WindRiver Makefile not found"
 		echo "Generate the Makefile or use other configuration methods"
-		exit 66
+		exit 1
 	fi
 fi
 
