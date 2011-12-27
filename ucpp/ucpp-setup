@@ -1,12 +1,12 @@
 #! /bin/bash
 
-die()
+function die()
 {
 	echo "$1"
 	exit 1
 }
 
-usage()
+function usage()
 {
 	if [ -z "$platform" ]; then
 		cat<<EOF
@@ -138,8 +138,9 @@ while getopts "ht:c:-:" opt; do
 	esac
 done
 
+##### Functions #####
 
-gen_settings()
+function gen_settings()
 {
 	if [ -f "$HOME/.ucpp/settings" ]; then
 		echo -n "UCPP user settings already exist. Overwrite? (y/N)"
@@ -194,7 +195,7 @@ export COMPILER_DIR=$WIND_HOME/gnu/3.4.4-vxworks-6.3/x86-win32/bin
 EOF
 }
 
-install_gccdist()
+function install_gccdist()
 {
 	cd $HOME/.ucpp
 
@@ -217,7 +218,7 @@ install_gccdist()
 	fi
 }
 
-install_wpilib()
+function install_wpilib()
 {
 	cd $HOME/.ucpp
 	[ -d gccdist ] || die "Cannot install WPILib: gccdist not found"
@@ -251,7 +252,7 @@ install_wpilib()
 
 }
 
-linux_find_python2_settings()
+function linux_find_python2_settings()
 {
 #find python major version 2
     echo "-----> Detecting python ..."
@@ -280,7 +281,7 @@ linux_find_python2_settings()
     echo "-----> Python 2 found at: ${UCPP_PYTHON_BIN} [DONE]"
 }
 
-ms_windows_find_python2_dir()
+function ms_windows_find_python2_dir()
 {
 # Use pre-existing python version, if there is one
 if which python2 >/dev/null; then
@@ -299,43 +300,42 @@ fi
 echo "${UCPP_PYTHON_DIR}"
 }
 
-if [ "$platform" = "linux-windriver" ]; then
-	if [ -z "x$C_DRIVE" ]; then
-		echo "Please specify path to C:/ drive"
-		exit 1
-	else
+##### Main #####
+case "$platform" in
+	linux-windriver)
+		if [ -z "x$C_DRIVE" ]; then
+			echo "Please specify path to C:/ drive"
+			exit 1
+		fi
+
 		gen_settings
 		linux_find_python2_settings
 		cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
 UCPP_PYTHON_BIN="${UCPP_PYTHON_BIN}"
 EOF
-	fi
-fi
-
-if [ "$platform" = "linux-gccdist" ]; then
-	gen_settings
-	linux_find_python2_settings
-	cat >>"$HOME/.ucpp/settings" <<EOF
+		;;
+	linux-gccdist)
+		gen_settings
+		linux_find_python2_settings
+		cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
 UCPP_PYTHON_BIN="${UCPP_PYTHON_BIN}"
 EOF
-	install_gccdist
-	install_wpilib
-fi
-
-if [ "$platform" = "windows-cygwin" ]; then
-	gen_settings
-	cat >>"$HOME/.ucpp/settings" <<'EOF'
+		install_gccdist
+		install_wpilib
+		;;
+	windows-cygwin)
+		gen_settings
+		cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
 UCPP_PYTHON_BIN=python2
 EOF
-fi
-
-if [ "$platform" = "windows-git" ]; then
-	gen_settings
-	UCPP_PYTHON_DIR=$( ms_windows_find_python2_dir )
-	cat >>"$HOME/.ucpp/settings" <<'EOF'
+		;;
+	windows-git)
+		gen_settings
+		UCPP_PYTHON_DIR=$( ms_windows_find_python2_dir )
+		cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
 # Use the WindRiver verion of all unix commands
 export OLD_PATH="$PATH"
@@ -343,18 +343,19 @@ export PATH="${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin"
 export PATH="$PATH:$UCPP_PYTHON_DIR"
 EOF
 
-	if [ "x`which make`" = "x" ]; then
-		echo "Some unix commands are missing"
-		echo -n "Add WindRiver commands to PATH via appending to .bashrc? (Y/n)"
-		read answer
-		a=yes
-		if [ "x$answer" = "xN" ] || [ "x$answer" = "xn" ]; then
-			:
-		else
-			source $HOME/.ucpp/settings
-			echo 'export PATH="$PATH:COMMANDS_DIR"' | \
-			sed -e "s|COMMANDS_DIR|$WIND_HOME/workbench-3.0/x86-win32/bin|" >> ~/.bashrc
+		if [ "x`which make`" = "x" ]; then
+			echo "Some unix commands are missing"
+			echo -n "Add WindRiver commands to PATH via appending to .bashrc? (Y/n)"
+			read answer
+
+			if [ "x$answer" = "xN" ] || [ "x$answer" = "xn" ]; then
+				:
+			else
+				source $HOME/.ucpp/settings
+				echo 'export PATH="$PATH:COMMANDS_DIR"' | \
+					sed -e "s|COMMANDS_DIR|$WIND_HOME/workbench-3.0/x86-win32/bin|" >> ~/.bashrc
 			echo ".bashrc updated; restart command prompt for changes to take effect"
+			fi
 		fi
-	fi
-fi
+		;;
+esac

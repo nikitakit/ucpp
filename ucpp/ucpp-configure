@@ -1,12 +1,12 @@
 #! /bin/bash
 
-die()
+function die()
 {
 	echo "$1"
 	exit 1
 }
 
-usage()
+function usage()
 {
 	cat <<EOF
 Usage: ucpp configure <command>
@@ -162,7 +162,7 @@ EOF
 	fi
 }
 
-##### Makefile generation commands #####
+##### Main - Generate the Makefile #####
 
 case $command in
 	py)
