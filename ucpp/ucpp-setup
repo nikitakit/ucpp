@@ -34,7 +34,7 @@ EOF
 	fi
 	cat <<EOF
 Options
-  -h, --help, help
+  -h, --help
       Display this help and exit
   -t <team-number>
       Set default team number for deploying code
@@ -90,13 +90,13 @@ then
 	shift
 fi
 
-if [ "x$1" = "xhelp" ] || [ "x$1" = "x--help" ] || [ "x$platform" = "x" ]
+if [ "x$platform" = "x" ]
 then
 	usage
 	exit
 fi
 
-while getopts "ht:c:" opt; do
+while getopts "ht:c:-:" opt; do
 	case $opt in
 		h)
 			usage
@@ -114,6 +114,19 @@ while getopts "ht:c:" opt; do
 			;;
 		c)
 			C_DRIVE=$OPTARG
+			;;
+		-)
+			case $OPTARG in
+				help)
+					usage
+					exit
+					;;
+				*)
+					echo "Invalid option: --$OPTARG" >&2
+					usage >&2
+					exit 1
+					;;
+			esac
 			;;
 		\?)
 			echo "Invalid option: -$OPTARG" >&2
