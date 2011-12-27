@@ -22,38 +22,14 @@ EOF
 
 command="help"
 
-if [ "x$1" = "x" ]
-then
-	command="DEFAULT"
-fi
+[ "x$1" = "x" ] && command="DEFAULT"
+[ "x$1" = "xpy" ] && command="py"
+[ "x$1" = "xwinpy" ] && command="winpy"
+[ "x$1" = "xwr" ] && command="wr"
+[ "x$1" = "xwpipy" ] && command="wpipy"
+[ "x$1" = "xwpiwinpy" ] && command="wpiwinpy"
 
-if [ "x$1" = "xpy" ]
-then
-	command="py"
-fi
-
-if [ "x$1" = "xwinpy" ]
-then
-	command="winpy"
-fi
-
-if [ "x$1" = "xwr" ]
-then
-	command="wr"
-fi
-
-if [ "x$1" = "xwpipy" ]
-then
-	command="wpipy"
-fi
-
-if [ "x$1" = "xwpiwinpy" ]
-then
-	command="wpiwinpy"
-fi
-
-if [ "$command" = "help" ]
-then
+if [ "$command" = "help" ]; then
 	usage
 	exit
 fi
@@ -79,10 +55,8 @@ case "x$HAVE_CPP_PROJECT" in
 		;;
 esac
 
-if [ "$command" = "DEFAULT" ]
-then
-	if [ "x$DEFAULT_CONFIGURE_COMMAND" = "x" ]
-	then
+if [ "$command" = "DEFAULT" ]; then
+	if [ -z "$DEFAULT_CONFIGURE_COMMAND" ]; then
 		usage
 		exit
 	else
@@ -150,10 +124,7 @@ function modify_win_makefile()
 
 function add_deploy_target()
 {
-	if [ "x$DEPLOY_IP" = "x" ]
-	then
-		:
-	else
+	if [ -n "$DEPLOY_IP" ]; then
 		cat <<EOF
 
 # Custom targets inserted by ucpp
@@ -170,10 +141,7 @@ EOF
 
 function add_deploy_target_no_wput()
 {
-	if [ "x$DEPLOY_IP" = "x" ]
-	then
-		:
-	else
+	if [ -n "$DEPLOY_IP" ]; then
         cat > PPC603gnu/deploy_code_script <<EOF 
 cd /
 cd ni-rt
@@ -196,51 +164,47 @@ EOF
 
 ##### Makefile generation commands #####
 
-if [ "$command" = "py" ]
-then
-	echo -n "Manually generating Linux Makefile... "
-	mkdir -p PPC603gnu
-	${UCPP_PYTHON_BIN} `dirname $0`/ucpp_gen_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
-	add_deploy_target >> PPC603gnu/Makefile_linux
-	echo "Done"
-fi
+case $command in
+	py)
+		echo -n "Manually generating Linux Makefile... "
+		mkdir -p PPC603gnu
+		${UCPP_PYTHON_BIN} `dirname $0`/ucpp_gen_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
+		add_deploy_target >> PPC603gnu/Makefile_linux
+		echo "Done"
+		;;
 
-if [ "$command" = "winpy" ]
-then
-	echo -n "Manually generating Windows Makefile... "
-	mkdir -p PPC603gnu
-	${UCPP_PYTHON_BIN} "`dirname "$0" | sed "s|$C_DRIVE|C:/|"`/ucpp_gen_makefile.py" | modify_win_makefile > PPC603gnu/Makefile
-	add_deploy_target_no_wput >> PPC603gnu/Makefile
-	echo "Done"
-fi
+	winpy)
+		echo -n "Manually generating Windows Makefile... "
+		mkdir -p PPC603gnu
+		${UCPP_PYTHON_BIN} "`dirname "$0" | sed "s|$C_DRIVE|C:/|"`/ucpp_gen_makefile.py" | modify_win_makefile > PPC603gnu/Makefile
+		add_deploy_target_no_wput >> PPC603gnu/Makefile
+		echo "Done"
+		;;
 
-if [ "$command" = "wr" ]
-then
-	if [ -f PPC603gnu/Makefile ]
-	then
+	wr)
+		if [ ! -f PPC603gnu/Makefile ]; then
+			echo "WindRiver Makefile not found"
+			echo "Generate the Makefile or use other configuration methods"
+			exit 1
+		fi
+
 		echo -n "Modifying WindRiver Makefile for Linux..."
 		modify_makefile <PPC603gnu/Makefile >PPC603gnu/Makefile_linux
 		add_deploy_target >> PPC603gnu/Makefile_linux
 		echo "Done"
-	else
-		echo "WindRiver Makefile not found"
-		echo "Generate the Makefile or use other configuration methods"
-		exit 1
-	fi
-fi
+		;;
 
-if [ "$command" = "wpipy" ]
-then
-	echo -n "Manually generating WPILib Linux Makefile... "
-	mkdir -p PPC603gnu
-	${UCPP_PYTHON_BIN} `dirname "$0"`/ucpp_gen_wpilib_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
-	echo "Done"
-fi
+	wpipy)
+		echo -n "Manually generating WPILib Linux Makefile... "
+		mkdir -p PPC603gnu
+		${UCPP_PYTHON_BIN} `dirname "$0"`/ucpp_gen_wpilib_makefile.py | modify_makefile > PPC603gnu/Makefile_linux
+		echo "Done"
+		;;
 
-if [ "$command" = "wpiwinpy" ]
-then
-	echo -n "Manually generating WPILib Windows Makefile... "
-	mkdir -p PPC603gnu
-	${UCPP_PYTHON_BIN} `dirname "$0"`/ucpp_gen_wpilib_makefile.py > PPC603gnu/Makefile
-	echo "Done"
-fi
+	wpiwinpy)
+		echo -n "Manually generating WPILib Windows Makefile... "
+		mkdir -p PPC603gnu
+		${UCPP_PYTHON_BIN} `dirname "$0"`/ucpp_gen_wpilib_makefile.py > PPC603gnu/Makefile
+		echo "Done"
+		;;
+esac

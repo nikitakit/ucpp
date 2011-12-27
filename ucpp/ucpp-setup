@@ -8,8 +8,7 @@ die()
 
 usage()
 {
-	if [ "x$platform" = "x" ]
-	then
+	if [ -z "$platform" ]; then
 		cat<<EOF
 Usage: ucpp setup PLATFORM [options]
   Installs Universal C++ command-line tools.
@@ -70,36 +69,30 @@ case `uname` in
 		;;
 esac
 
-if [ "x$1" = "xlinux-windriver" ]
-then
-	platform=linux-windriver
-	C_DRIVE=
-	shift
-fi
+case "x$1" in
+	"xlinux-windriver")
+		platform=linux-windriver
+		C_DRIVE=
+		shift
+		;;
+	"xlinux-gccdist")
+		platform=linux-gccdist
+		C_DRIVE=$HOME/.ucpp/gccdist/
+		shift
+		;;
+	"xwindows-cygwin")
+		platform=windows-cygwin
+		C_DRIVE=/cygdrive/c/
+		shift
+		;;
+	"xwindows-git")
+		platform=windows-git
+		C_DRIVE=/c/
+		shift
+		;;
+esac
 
-if [ "x$1" = "xlinux-gccdist" ]
-then
-	platform=linux-gccdist
-	C_DRIVE=$HOME/.ucpp/gccdist/
-	shift
-fi
-
-if [ "x$1" = "xwindows-cygwin" ]
-then
-	platform=windows-cygwin
-	C_DRIVE=/cygdrive/c/
-	shift
-fi
-
-if [ "x$1" = "xwindows-git" ]
-then
-	platform=windows-git
-	C_DRIVE=/c/
-	shift
-fi
-
-if [ "x$platform" = "x" ]
-then
+if [ -z "$platform" ]; then
 	usage >&2
 	exit 1
 fi
@@ -114,10 +107,7 @@ while getopts "ht:c:-:" opt; do
 			HUNDREDS=`expr $OPTARG / 100`
 			UNDER_HUNDREDS=`expr $OPTARG % 100`
 			DEPLOY_IP="10.${HUNDREDS}.${UNDER_HUNDREDS}.2"
-			if [ "x$DEPLOY_IP" = "x10...2" ]
-			then
-				die "Invalid team number"
-			fi
+			[ "x$DEPLOY_IP" = "x10...2" ] && die "Invalid team number"
 			;;
 		c)
 			C_DRIVE=$OPTARG
@@ -151,19 +141,15 @@ done
 
 gen_settings()
 {
-	if [ -f "$HOME/.ucpp/settings" ]
-	then
+	if [ -f "$HOME/.ucpp/settings" ]; then
 		echo -n "UCPP user settings already exist. Overwrite? (y/N)"
-		if [ "x$UCPP_SILENT" = "xyes" ]
-		then
+		if [ "x$UCPP_SILENT" = "xyes" ]; then
 			exit
-		elif [ "x$UCPP_FORCE" == "xyes" ]
-		then
+		elif [ "x$UCPP_FORCE" == "xyes" ]; then
 			echo y
 		else
 			read answer
-			if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]
-			then
+			if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]; then
 				:
 			else
 				exit
@@ -212,8 +198,7 @@ install_gccdist()
 {
 	cd $HOME/.ucpp
 
-	if [ -f gccdist.zip ]
-	then
+	if [ -f gccdist.zip ]; then
 		echo "-----> gccdist download [DONE]"
 	else
 		echo "-----> gccdist download ..."
@@ -221,8 +206,7 @@ install_gccdist()
 		echo "-----> gccdist download [DONE]"
 	fi
 
-	if [ -d gccdist ]
-	then
+	if [ -d gccdist ]; then
 		echo "-----> gccdist install [DONE]"
 	else
 		echo "-----> gccdist install ..."
@@ -231,6 +215,12 @@ install_gccdist()
 		cp gccdist/supp/zwrsLicense.lic gccdist/WindRiver/license/zwrsLicense.lic
 		echo "-----> gccdist install [DONE]"
 	fi
+}
+
+install_wpilib()
+{
+	cd $HOME/.ucpp
+	[ -d gccdist ] || die "Cannot install WPILib: gccdist not found"
 
 	echo -n "-----> Checking for WPILib updates... "
 	wget -q http://firstforge.wpi.edu/sf/frs/do/viewSummary/projects.wpilib/frs -O - | grep 'WPILib C++ update' | sed "s/.*<a href=\"\([^\"]*\)\">.*/http:\/\/firstforge.wpi.edu\1/" | uniq | sed "s/;.*//" > wpilib_page1.url
@@ -238,8 +228,7 @@ install_gccdist()
 	wget `cat wpilib_page2.url` -q -O - | grep "\.exe\s*<\/a>" | sed "s/.*<a href=\"\([^\"]*\)\".*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page3.url
 
 	touch wpilib_last_downloaded.url
-	if [ "x`cat wpilib_page3.url`" == "x`cat wpilib_last_downloaded.url`" ]
-	then
+	if [ "x`cat wpilib_page3.url`" == "x`cat wpilib_last_downloaded.url`" ]; then
 		echo "no new updates"
 	else
 		echo "updates available"
@@ -266,26 +255,22 @@ linux_find_python2_settings()
 {
 #find python major version 2
     echo "-----> Detecting python ..."
-    if [ "x`which python`" != "x" ]
-    then
-	UCPP_PYTHON_MAJOR_VERSION=$( python --version 2>&1 | \
-	    sed "s/Python \([0-9]\+\).*/\1/" )
-	if [ "$UCPP_PYTHON_MAJOR_VERSION" = "2" ]
-	then
-	    UCPP_PYTHON_BIN=`which python`
-	elif [ "x`which python2`" != "x" ]
-	then
-	    UCPP_PYTHON_BIN=`which python2`
-	elif [ "x`which python2.7`" != "x" ]
-	then
-	    UCPP_PYTHON_BIN=`which python2.7`
-	elif [ "x`which python2.6`" != "x" ]
-	then
-	    UCPP_PYTHON_BIN=`which python2.6`
+	if which python >/dev/null; then
+		UCPP_PYTHON_MAJOR_VERSION=$( python --version 2>&1 | \
+			sed "s/Python \([0-9]\+\).*/\1/" )
+
+		if [ "$UCPP_PYTHON_MAJOR_VERSION" = "2" ]; then
+			UCPP_PYTHON_BIN=`which python`
+		elif [ "x`which python2`" != "x" ]; then
+			UCPP_PYTHON_BIN=`which python2`
+		elif [ "x`which python2.7`" != "x" ]; then
+			UCPP_PYTHON_BIN=`which python2.7`
+		elif [ "x`which python2.6`" != "x" ]; then
+			UCPP_PYTHON_BIN=`which python2.6`
+		fi
 	fi
-    fi
-    if [ "x$UCPP_PYTHON_BIN" = "x" ]
-    then
+
+    if [ -z "x$UCPP_PYTHON_BIN" ]; then
         echo "Python 2.x not found"
 	    echo "Install python 2 or add it to system PATH"
 	    echo "ucpp-setup FAILED"
@@ -298,28 +283,24 @@ linux_find_python2_settings()
 ms_windows_find_python2_dir()
 {
 # Use pre-existing python version, if there is one
-if [ "x`which python2`" = "x" ]
-then
-	if [ "x`which ${C_DRIVE}Python27/python.exe`" = "x" ]
-	then
+if which python2 >/dev/null; then
+	UCPP_PYTHON_DIR=$(${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin/dirname "`which python2`" | sed "s|[Cc]:/|$C_DRIVE|g")
+else
+	if which "${C_DRIVE}Python27/python.exe" >/dev/null; then
+		UCPP_PYTHON_DIR="${C_DRIVE}Python27"
+	else
 		echo "Python not found"
 		echo "Install python or add it to system PATH"
 		echo "ucpp-setup FAILED"
 		exit 1
-	else
-		UCPP_PYTHON_DIR="${C_DRIVE}Python27"
 	fi
-else
-	UCPP_PYTHON_DIR=$(${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin/dirname "`which python2`" | sed "s|[Cc]:/|$C_DRIVE|g") 
 fi
 
 echo "${UCPP_PYTHON_DIR}"
 }
 
-if [ "$platform" = "linux-windriver" ]
-then
-	if [ "x$C_DRIVE" = "x" ]
-	then
+if [ "$platform" = "linux-windriver" ]; then
+	if [ -z "x$C_DRIVE" ]; then
 		echo "Please specify path to C:/ drive"
 		exit 1
 	else
@@ -329,13 +310,10 @@ then
 DEFAULT_CONFIGURE_COMMAND=py
 UCPP_PYTHON_BIN="${UCPP_PYTHON_BIN}"
 EOF
-
-
 	fi
 fi
 
-if [ "$platform" = "linux-gccdist" ]
-then
+if [ "$platform" = "linux-gccdist" ]; then
 	gen_settings
 	linux_find_python2_settings
 	cat >>"$HOME/.ucpp/settings" <<EOF
@@ -343,10 +321,10 @@ DEFAULT_CONFIGURE_COMMAND=py
 UCPP_PYTHON_BIN="${UCPP_PYTHON_BIN}"
 EOF
 	install_gccdist
+	install_wpilib
 fi
 
-if [ "$platform" = "windows-cygwin" ]
-then
+if [ "$platform" = "windows-cygwin" ]; then
 	gen_settings
 	cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
@@ -354,8 +332,7 @@ UCPP_PYTHON_BIN=python2
 EOF
 fi
 
-if [ "$platform" = "windows-git" ]
-then
+if [ "$platform" = "windows-git" ]; then
 	gen_settings
 	UCPP_PYTHON_DIR=$( ms_windows_find_python2_dir )
 	cat >>"$HOME/.ucpp/settings" <<'EOF'
@@ -366,14 +343,12 @@ export PATH="${C_DRIVE}WindRiver/workbench-3.0/x86-win32/bin"
 export PATH="$PATH:$UCPP_PYTHON_DIR"
 EOF
 
-	if [ "x`which make`" = "x" ]
-	then
+	if [ "x`which make`" = "x" ]; then
 		echo "Some unix commands are missing"
 		echo -n "Add WindRiver commands to PATH via appending to .bashrc? (Y/n)"
 		read answer
 		a=yes
-		if [ "x$answer" = "xN" ] || [ "x$answer" = "xn" ]
-		then
+		if [ "x$answer" = "xN" ] || [ "x$answer" = "xn" ]; then
 			:
 		else
 			source $HOME/.ucpp/settings

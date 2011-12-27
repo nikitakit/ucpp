@@ -30,10 +30,7 @@ while getopts "ht:-:" opt; do
 			HUNDREDS=`expr $OPTARG / 100`
 			UNDER_HUNDREDS=`expr $OPTARG % 100`
 			DEPLOY_IP="10.${HUNDREDS}.${UNDER_HUNDREDS}.2"
-			if [ "x$DEPLOY_IP" = "x10...2" ]
-			then
-				die "Invalid team number"
-			fi
+			[ "x$DEPLOY_IP" = "x10...2" ] && die "Invalid team number"
 			;;
 		-)
 			case $OPTARG in
@@ -61,23 +58,19 @@ while getopts "ht:-:" opt; do
 	esac
 done
 
-if [ -f .ucpp ]
-then
+if [ -f .ucpp ]; then
 	echo "ERROR: Project already exists in `pwd`"
 	echo -n "Overwrite? All customizations will be lost. (y/N)"
-	if [ "x$UCPP_SILENT" = "xyes" ]
-	then
+	if [ "x$UCPP_SILENT" = "xyes" ]; then
 		exit
-	elif [ "x$UCPP_FORCE" == "xyes" ]
-	then
+	elif [ "x$UCPP_FORCE" == "xyes" ]; then
 		echo y
 	else
 		read answer
-		if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]
-		then
+		if [ "x$answer" = "xY" ] || [ "x$answer" = "xy" ]; then
 			:
 		else
-			exit 66
+			exit 1
 		fi
 	fi
 fi
@@ -103,10 +96,7 @@ export CPP_PROJECT_NAME="$CPP_PROJECT_NAME"
 export CPP_PROJECT_ROOT_DIR="$CPP_PROJECT_ROOT_DIR"
 EOF
 
-if [ "x$DEPLOY_IP" = "x" ]
-then
-	:
-else
+if [ -n "$DEPLOY_IP" ]; then
 	cat <<EOF >>.ucpp
 # IP to deploy robot code
 export DEPLOY_IP=$DEPLOY_IP
@@ -126,10 +116,7 @@ EOF
 
 # If there is no .wrmakefile, create one
 
-if [ -f .wrmakefile ]
-then
-	:
-else
+if [ ! -f .wrmakefile ]; then
 	cp "$SCRIPT_INSTALL_DIR/.wrmakefile" .
 fi
 
@@ -180,9 +167,6 @@ Initialized UCPP project "$CPP_PROJECT_NAME"
   Workspace directory     $CPP_PROJECT_WS_ROOT_DIR
 EOF
 
-if [ "x$DEPLOY_IP" = "x" ]
-then
-	:
-else
+if [ -n "$DEPLOY_IP" ]; then
 	echo "  Code deployment IP      $DEPLOY_IP"
 fi

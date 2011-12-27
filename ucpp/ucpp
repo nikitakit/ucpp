@@ -1,29 +1,31 @@
 #! /bin/bash
 
-# Aliases for typing space instead of "-"
 cmd="$1"
 shift
-if [ "x$cmd" = "x-s" ]
-then
+
+# Options
+
+if [ "x$cmd" = "x-s" ]; then
 	export UCPP_SILENT=yes
 	cmd="$1"
 	shift
-elif [ "x$cmd" = "x-y" ]
-then
+elif [ "x$cmd" = "x-y" ]; then
 	export UCPP_FORCE=yes
 	cmd="$1"
 	shift
 fi
 
-if which ucpp-$cmd >& /dev/null
-then
+
+# Call the actual command
+
+if which ucpp-$cmd >& /dev/null; then
 	exec ucpp-$cmd "$@"
 fi
 
 cat <<EOF
 Usage: ucpp [-s|-y] COMMAND [ARGS]
 
-  -s        Don't prompt for imput, just exit
+  -s        Don't prompt for input, just exit
   -y		Force yes on prompts
 
 Commands:
