@@ -256,6 +256,10 @@ function install_wpilib()
 	echo -n "WPILib version: "
 	cat gccdist/WindRiver/unziplog.txt | grep "inflating: WPILib/.*\.zip" | sed "s/.*\(WPILib\/.*\.zip\).*/\1/"
 
+	rm -f demo
+	ln -s gccdist/WindRiver/vxworks-6.3/target/src/demo demo
+
+	echo "Example code can be found in: ~/.ucpp/demo/"
 }
 
 function linux_find_python2_settings()
