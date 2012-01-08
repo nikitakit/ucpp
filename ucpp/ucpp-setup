@@ -330,6 +330,7 @@ EOF
 		install_wpilib
 		;;
 	windows-cygwin)
+		[ -d "${C_DRIVE}WindRiver/" ] || die "ERROR: ucpp on Windows currently requires a copy of WindRiver"
 		gen_settings
 		gnu_find_python2_settings
 		cat >>"$HOME/.ucpp/settings" <<'EOF'
@@ -338,6 +339,7 @@ UCPP_PYTHON_BIN="${UCPP_PYTHON_BIN}"
 EOF
 		;;
 	windows-git)
+		[ -d "${C_DRIVE}WindRiver/" ] || die "ERROR: ucpp on Windows currently requires a copy of WindRiver"
 		gen_settings
 		UCPP_PYTHON_DIR=$( ms_windows_find_python2_dir )
 		cat >>"$HOME/.ucpp/settings" <<'EOF'
