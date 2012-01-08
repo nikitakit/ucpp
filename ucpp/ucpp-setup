@@ -262,7 +262,7 @@ function install_wpilib()
 	echo "Example code can be found in: ~/.ucpp/demo/"
 }
 
-function linux_find_python2_settings()
+function gnu_find_python2_settings()
 {
 #find python major version 2
     echo "-----> Detecting python ..."
@@ -319,7 +319,7 @@ case "$platform" in
 		fi
 
 		gen_settings
-		linux_find_python2_settings
+		gnu_find_python2_settings
 		cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
 UCPP_PYTHON_BIN="${UCPP_PYTHON_BIN}"
@@ -327,7 +327,7 @@ EOF
 		;;
 	linux-gccdist)
 		gen_settings
-		linux_find_python2_settings
+		gnu_find_python2_settings
 		cat >>"$HOME/.ucpp/settings" <<EOF
 DEFAULT_CONFIGURE_COMMAND=py
 UCPP_PYTHON_BIN="${UCPP_PYTHON_BIN}"
@@ -337,9 +337,10 @@ EOF
 		;;
 	windows-cygwin)
 		gen_settings
+		gnu_find_python2_settings
 		cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
-UCPP_PYTHON_BIN=python2
+UCPP_PYTHON_BIN="${UCPP_PYTHON_BIN}"
 EOF
 		;;
 	windows-git)
