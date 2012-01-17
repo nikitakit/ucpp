@@ -170,7 +170,7 @@ CPP_PROJECT_NAME_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Partial-Image-Linker =
 CPP_PROJECT_NAME_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Librarian = 
 CPP_PROJECT_NAME_partialImage/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -O2 -fstrength-reduce -fno-builtin
 endif
-CPP_PROJECT_NAME_partialImage/$(MODE_DIR)/% : IDE_INCLUDES = -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/WPILib -I$(WIND_BASE)/target/h/wrn/coreip -I. 
+CPP_PROJECT_NAME_partialImage/$(MODE_DIR)/% : IDE_INCLUDES = -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/WPILib -I$(WIND_BASE)/target/h/wrn/coreip -I. -I$(PRJ_ROOT_DIR)
 CPP_PROJECT_NAME_partialImage/$(MODE_DIR)/% : IDE_LIBRARIES = $(WIND_BASE)/target/lib/WPILib.a 
 CPP_PROJECT_NAME_partialImage/$(MODE_DIR)/% : PROJECT_TYPE = DKM
 CPP_PROJECT_NAME_partialImage/$(MODE_DIR)/% : DEFINES = 

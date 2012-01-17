@@ -90,12 +90,17 @@ function modify_makefile() {
 	#    -include $(DEP_FILES)
 	# TODO: figure out what it does and why it gives errors
 
-	sed 's|WIND_HOME :=|FILE_START\n&|' | \
-	sed "s|FILE_START|export WIND_HOME=$WIND_HOME\n&|" |\
-	sed "s|FILE_START|export WIND_BASE=$WIND_BASE\n&|" |\
-	sed "s|FILE_START|export WIND_LIC_PROXY=$WIND_LIC_PROXY\n&|" |\
-	sed "s|FILE_START|export LM_LICENSE_FILE=$LM_LICENSE_FILE\n&|" |\
-	sed "s|FILE_START|export WINEDEBUG=fixme-all\n|" |\
+	sed 's|WIND_HOME :=|FILE_START\'$'\n&|' | \
+	sed "s|FILE_START|export WIND_HOME=$WIND_HOME&|" |\
+	sed $'s|FILE_START|\\\n&|' |\
+	sed "s|FILE_START|export WIND_BASE=$WIND_BASE&|" |\
+	sed $'s|FILE_START|\\\n&|' |\
+	sed "s|FILE_START|export WIND_LIC_PROXY=$WIND_LIC_PROXY&|" |\
+	sed $'s|FILE_START|\\\n&|' |\
+	sed "s|FILE_START|export LM_LICENSE_FILE=$LM_LICENSE_FILE&|" |\
+	sed $'s|FILE_START|\\\n&|' |\
+	sed "s|FILE_START|export WINEDEBUG=fixme-all|" |\
+	sed $'s|FILE_START|\\\n&|' |\
 	\
 	sed "s|TOOL_PATH = |TOOL_PATH = wine $COMPILER_DIR/|g" |\
 	\
