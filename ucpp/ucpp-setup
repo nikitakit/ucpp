@@ -254,7 +254,7 @@ EOF
 		echo "-----> gccdist already installed"
 	else
 		echo "-----> gccdist install ..."
-		unzip -oDDqq gccdist.zip -d .
+		unzip -oqq gccdist.zip -d .
 		mkdir -p gccdist/WindRiver/license
 		cp gccdist/supp/zwrsLicense.lic gccdist/WindRiver/license/zwrsLicense.lic
 		echo "-----> gccdist install [DONE]"
