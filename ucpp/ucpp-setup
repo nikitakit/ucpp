@@ -361,7 +361,7 @@ EOF
 			if [ "x$answer" = "xN" ] || [ "x$answer" = "xn" ]; then
 				:
 			else
-				source $HOME/.ucpp/settings
+				source "$HOME/.ucpp/settings"
 				echo 'export PATH="$PATH:COMMANDS_DIR"' | \
 					sed -e "s|COMMANDS_DIR|$WIND_HOME/workbench-3.0/x86-win32/bin|" >> ~/.bashrc
 			echo ".bashrc updated; restart command prompt for changes to take effect"
