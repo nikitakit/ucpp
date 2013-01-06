@@ -359,6 +359,7 @@ EOF
 
 		cat >>"$HOME/.ucpp/settings" <<'EOF'
 DEFAULT_CONFIGURE_COMMAND=winpy
+UCPP_PYTHON_BIN="${UCPP_PYTHON_DIR}/python.exe"
 # Use the WindRiver verion of all unix commands
 export OLD_PATH="$PATH"
 export PATH="$UCPP_WIND_BIN:$UCPP_PYTHON_DIR"
