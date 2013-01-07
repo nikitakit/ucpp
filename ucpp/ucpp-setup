@@ -203,7 +203,7 @@ function install_gccdist()
 		echo "-----> gccdist download [DONE]"
 	else
 		echo "-----> gccdist download ..."
-		wget ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip -O gccdist.zip
+		curl ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip -o gccdist.zip
 		echo "-----> gccdist download [DONE]"
 	fi
 
@@ -224,9 +224,9 @@ function install_wpilib()
 	[ -d gccdist ] || die "Cannot install WPILib: gccdist not found"
 
 	echo -n "-----> Checking for WPILib updates... "
-	wget -q http://firstforge.wpi.edu/sf/frs/do/viewSummary/projects.wpilib/frs -O - | grep '2013 FRC Update for C++' | sed "s/.*<a href=\"\([^\"]*\)\">.*/http:\/\/firstforge.wpi.edu\1/" | uniq | sed "s/;.*//" > wpilib_page1.url
-	wget `cat wpilib_page1.url` -q -O - | grep "rel[0-9][0-9]*" | grep href | sed "s/.*\(rel[0-9]*\)/\1/" | sort -r | tail -n 1 | sed "s/.*<a href=\"\([^\"]*\).*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page2.url
-	wget `cat wpilib_page2.url` -q -O - | grep "\.exe\s*<\/a>" | sed "s/.*<a href=\"\([^\"]*\)\".*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page3.url
+	curl -s http://firstforge.wpi.edu/sf/frs/do/viewSummary/projects.wpilib/frs | grep '2013 FRC Update for C++' | sed "s/.*<a href=\"\([^\"]*\)\">.*/http:\/\/firstforge.wpi.edu\1/" | uniq | sed "s/;.*//" > wpilib_page1.url
+	curl -s `cat wpilib_page1.url` | grep "rel[0-9][0-9]*" | grep href | sed "s/.*\(rel[0-9]*\)/\1/" | sort -r | tail -n 1 | sed "s/.*<a href=\"\([^\"]*\).*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page2.url
+	curl -s `cat wpilib_page2.url` | grep "\.exe\s*<\/a>" | sed "s/.*<a href=\"\([^\"]*\)\".*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page3.url
 
 	touch wpilib_last_downloaded.url
 	if [ "x`cat wpilib_page3.url`" == "x`cat wpilib_last_downloaded.url`" ]; then
@@ -234,7 +234,7 @@ function install_wpilib()
 	else
 		echo "updates available"
 		echo "-----> WPILib download ..."
-		wget `cat wpilib_page3.url` -O wpilibupdate.exe
+		curl `cat wpilib_page3.url` -o wpilibupdate.exe
 		mv wpilib_page3.url wpilib_last_downloaded.url
 		echo "-----> WPILib download [DONE]"
 	fi
