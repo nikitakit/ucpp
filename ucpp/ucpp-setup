@@ -354,6 +354,15 @@ function ms_windows_find_windriver_bin()
 }
 
 ##### Main #####
+if [ -z "$DEPLOY_IP" ]; then
+	if [ -f "$HOME/.ucpp/settings" ] && cat "$HOME/.ucpp/settings" | grep DEPLOY_IP | cut -d '=' -f 2 | grep 10 >/dev/null; then
+		DEPLOY_IP=$(cat "$HOME/.ucpp/settings" | grep DEPLOY_IP | cut -d '=' -f 2)
+		echo "Reusing old deploy IP: $DEPLOY_IP"
+	else
+		echo "Warning: Default team number was not specified"
+	fi
+fi
+
 case "$platform" in
 	linux-windriver)
 		if [ -z "$C_DRIVE" ]; then
