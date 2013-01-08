@@ -69,15 +69,18 @@ case `uname` in
 			platform=windows-git
 			C_DRIVE=/c/
 		else
-			echo "WindRiver is not installed"
-			echo -n "Do you want to download/install gccdist instead (Y/n)"
-			read answer
-			if [ "x$answer" = "xN" ] || [ "x$answer" = "xn" ]; then
-				die "Setup aborted"
+			if [ -d "$HOME/.ucpp/gccdist/" ]; then
+				:
 			else
-				platform=windows-git-gccdist
-				C_DRIVE=$HOME/.ucpp/gccdist/
+				echo "WindRiver is not installed"
+				echo -n "Do you want to download/install gccdist instead (Y/n)"
+				read answer
+				if [ "x$answer" = "xN" ] || [ "x$answer" = "xn" ]; then
+					die "Setup aborted"
+				fi
 			fi
+			platform=windows-git-gccdist
+			C_DRIVE=$HOME/.ucpp/gccdist/
 		fi
 		;;
 	CYGWIN*)
