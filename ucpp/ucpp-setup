@@ -265,7 +265,7 @@ function install_wpilib()
 	fi
 
 	touch wpilib_last_installed.url
-	if [ "x`cat wpilib_page3.url`" == "x`cat wpilib_last_installed.url`" ]; then
+	if [ "x`cat wpilib_last_downloaded.url`" == "x`cat wpilib_last_installed.url`" ]; then
 		echo "-----> WPILib already installed"
 	else
 		echo "-----> WPILib install ..."
