@@ -51,6 +51,11 @@ Available Platforms:
   windows-git
       Set up a Windows build system that relies on
       WindRiver and MSYSgit
+
+  windows-git-gccdist
+      Set up a Windows build system that relies on
+      gccdist and MSYSgit
+
 EOF
 }
 
@@ -60,8 +65,20 @@ case `uname` in
 		C_DRIVE=$HOME/.ucpp/gccdist/
 		;;
 	windows32|MINGW*)
-		platform=windows-git
-		C_DRIVE=/c/
+		if [ -d "${C_DRIVE}WindRiver" ]; then
+			platform=windows-git
+			C_DRIVE=/c/
+		else
+			echo "WindRiver is not installed"
+			echo -n "Do you want to download/install gccdist instead (Y/n)"
+			read answer
+			if [ "x$answer" = "xN" ] || [ "x$answer" = "xn" ]; then
+				die "Setup aborted"
+			else
+				platform=windows-git-gccdist
+				C_DRIVE=$HOME/.ucpp/gccdist/
+			fi
+		fi
 		;;
 	CYGWIN*)
 		platform=windows-cygwin
@@ -88,6 +105,11 @@ case "x$1" in
 	"xwindows-git")
 		platform=windows-git
 		C_DRIVE=/c/
+		shift
+		;;
+	"xwindows-git-gccdist")
+		platform=windows-git-gccdist
+		C_DRIVE=$HOME/.ucpp/gccdist/
 		shift
 		;;
 esac
@@ -250,8 +272,13 @@ function install_wpilib()
 	echo -n "WPILib version: "
 	cat gccdist/WindRiver/unziplog.txt | grep "inflating: WPILib/.*\.zip" | sed "s/.*\(WPILib\/.*\.zip\).*/\1/"
 
-	rm -f demo
-	ln -s gccdist/WindRiver/vxworks-6.3/target/src/demo demo
+	if [ "$platform" = "linux-gccdist" ]; then
+		rm -f demo
+		ln -s gccdist/WindRiver/vxworks-6.3/target/src/demo demo
+	else
+		rm -rf demo
+		cp -r gccdist/WindRiver/vxworks-6.3/target/src/demo demo
+	fi
 
 	echo "Example code can be found in: ~/.ucpp/demo/"
 }
@@ -287,12 +314,18 @@ function gnu_find_python2_settings()
 
 function ms_windows_find_python2_dir()
 {
+if [ -z "$1" ]; then
+	ROOT="${C_DRIVE}"
+else
+	ROOT="$1"
+fi
+
 # Use pre-existing python version, if there is one
 if which python2 >/dev/null; then
 	UCPP_PYTHON_DIR=$(dirname "`which python2`" | sed "s|[Cc]:/|$C_DRIVE|g")
 else
-	if which "${C_DRIVE}Python27/python.exe" >/dev/null; then
-		UCPP_PYTHON_DIR="${C_DRIVE}Python27"
+	if which "${ROOT}Python27/python.exe" >/dev/null; then
+		UCPP_PYTHON_DIR="${ROOT}Python27"
 	else
 		echo "Python not found"
 		echo "Install python or add it to system PATH"
@@ -311,6 +344,7 @@ function ms_windows_find_windriver_bin()
 	else
 		UCPP_WIND_BIN="${C_DRIVE}WindRiver/workbench-2.5/x86-win32/bin"
 	fi
+	OLD_PATH="$PATH"
 	export PATH="$PATH:$UCPP_WIND_BIN"
 }
 
@@ -366,6 +400,39 @@ export OLD_PATH="$PATH"
 export PATH="$UCPP_WIND_BIN:$UCPP_PYTHON_DIR"
 EOF
 
+		export PATH="$OLD_PATH"
+		if [ "x`which make`" = "x" ]; then
+			echo "Some unix commands are missing"
+			echo -n "Add WindRiver commands to PATH via appending to .bashrc? (Y/n)"
+			read answer
+
+			if [ "x$answer" = "xN" ] || [ "x$answer" = "xn" ]; then
+				:
+			else
+				echo 'export PATH="$PATH:COMMANDS_DIR"' | \
+					sed -e "s|COMMANDS_DIR|$UCPP_WIND_BIN|" >> ~/.bashrc
+			echo ".bashrc updated; restart command prompt for changes to take effect"
+			fi
+		fi
+		;;
+	windows-git-gccdist)
+		gen_settings
+		install_gccdist
+		ms_windows_find_windriver_bin
+		ms_windows_find_python2_dir /c/
+		cat >>"$HOME/.ucpp/settings" <<EOF
+export UCPP_PYTHON_DIR=$UCPP_PYTHON_DIR
+export UCPP_WIND_BIN=$UCPP_WIND_BIN
+EOF
+
+		cat >>"$HOME/.ucpp/settings" <<'EOF'
+DEFAULT_CONFIGURE_COMMAND=winpy
+UCPP_PYTHON_BIN="${UCPP_PYTHON_DIR}/python.exe"
+export PATH="$PATH:$UCPP_WIND_BIN:$UCPP_PYTHON_DIR"
+EOF
+		install_wpilib
+
+		export PATH="$OLD_PATH"
 		if [ "x`which make`" = "x" ]; then
 			echo "Some unix commands are missing"
 			echo -n "Add WindRiver commands to PATH via appending to .bashrc? (Y/n)"
