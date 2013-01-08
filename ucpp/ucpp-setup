@@ -356,7 +356,7 @@ function ms_windows_find_windriver_bin()
 ##### Main #####
 case "$platform" in
 	linux-windriver)
-		if [ -z "x$C_DRIVE" ]; then
+		if [ -z "$C_DRIVE" ]; then
 			echo "Please specify path to C:/ drive"
 			exit 1
 		fi
