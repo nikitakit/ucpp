@@ -47,7 +47,7 @@ case "x$HAVE_CPP_PROJECT" in
 		;;
 	xno)
 		echo "Current directory is not configured as a C++ project"
-		echo "Run ucpp init -t <team-number>"
+		echo "Run ucpp init [-t <team-number>]"
 		exit 1
 		;;
 	x)
