@@ -2,7 +2,8 @@ Universal compiling scripts for FRC
 
 System Requirements:
   For Linux: wine, wput
-  For Windows: MSYSgit or Cygwin
+  For Windows/MSYSgit: MSYSgit, Python
+  For Windows/Cygwin: Cygwin, Python, WindRiver
 
 Installation instructions:
  - Add the "ucpp/ucpp" folder to your system PATH
