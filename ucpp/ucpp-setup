@@ -272,8 +272,6 @@ function install_wpilib()
 	echo "-----> WPILib install [DONE]"
 
 	echo "-----> [FINISHED]"
-	echo -n "WPILib version: "
-	cat gccdist/WindRiver/unziplog.txt | grep "inflating: WPILib/.*\.zip" | sed "s/.*\(WPILib\/.*\.zip\).*/\1/"
 
 	if [ "$platform" = "linux-gccdist" ]; then
 		rm -f demo
@@ -282,8 +280,6 @@ function install_wpilib()
 		rm -rf demo
 		cp -r gccdist/WindRiver/vxworks-6.3/target/src/demo demo
 	fi
-
-	echo "Example code can be found in: ~/.ucpp/demo/"
 }
 
 function gnu_find_python2_settings()
@@ -462,3 +458,20 @@ EOF
 		fi
 		;;
 esac
+
+cat <<EOF
+
+UCPP setup successful
+  Platform                $platform
+EOF
+
+if [ -n "$DEPLOY_IP" ]; then
+	echo "  Code deployment IP      $DEPLOY_IP"
+fi
+
+if [ "$platform" = "linux-gccdist" ] || [ "$platform" = "windows-git-gccdist" ]; then
+	echo -n "  WPILib version          "
+	cat gccdist/WindRiver/unziplog.txt | grep "inflating: WPILib/WPILibC++.*\.zip" | sed "s/.*\(WPILib\/.*\.zip\).*/\1/"
+	echo "  Example code can be found in ~/.ucpp/demo/"
+fi
+
