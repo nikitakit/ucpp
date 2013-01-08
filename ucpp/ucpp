@@ -32,4 +32,6 @@ Commands:
   setup     Set global ucpp settings (required before running other commands)
   init      Configure current directory as a UCPP project
   configure Generate makefiles for this project
+
+See 'ucpp help <command>' for more information on a specific command.
 EOF

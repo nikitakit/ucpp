@@ -1,0 +1,12 @@
+#! /bin/bash
+
+if [ -z "$1" ]; then
+	exec ucpp
+fi
+
+
+if which ucpp-$1 >& /dev/null; then
+	exec ucpp-$1 --help
+else
+	echo "No help entry for $1"
+fi
