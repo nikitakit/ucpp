@@ -225,7 +225,7 @@ function install_gccdist()
 	cd $HOME/.ucpp
 
 	if [ -f gccdist.zip ]; then
-		echo "-----> gccdist download [DONE]"
+		echo "-----> gccdist already downloaded"
 	else
 		echo "-----> gccdist download ..."
 		curl ftp://ftp.ni.com/pub/devzone/tut/updated_vxworks63gccdist.zip -o gccdist.zip
@@ -233,7 +233,7 @@ function install_gccdist()
 	fi
 
 	if [ -d gccdist ]; then
-		echo "-----> gccdist install [DONE]"
+		echo "-----> gccdist already installed"
 	else
 		echo "-----> gccdist install ..."
 		unzip -oDDqq gccdist.zip -d .
@@ -264,14 +264,18 @@ function install_wpilib()
 		echo "-----> WPILib download [DONE]"
 	fi
 
-	echo "-----> WPILib install ..."
-	cd gccdist/WindRiver
-	echo "A" | unzip ../../wpilibupdate.exe > unziplog.txt 2>/dev/null
-	cd ../../
-	rm -f wpilib_page1.url wpilib_page2.url wpilib_page3.url
-	echo "-----> WPILib install [DONE]"
-
-	echo "-----> [FINISHED]"
+	touch wpilib_last_installed.url
+	if [ "x`cat wpilib_page3.url`" == "x`cat wpilib_last_installed.url`" ]; then
+		echo "-----> WPILib already installed"
+	else
+		echo "-----> WPILib install ..."
+		cd gccdist/WindRiver
+		echo "A" | unzip ../../wpilibupdate.exe > unziplog.txt 2>/dev/null
+		cd ../../
+		rm -f wpilib_page1.url wpilib_page2.url wpilib_page3.url
+		cp wpilib_last_downloaded.url wpilib_last_installed.url
+		echo "-----> WPILib install [DONE]"
+	fi
 
 	if [ "$platform" = "linux-gccdist" ]; then
 		rm -f demo
