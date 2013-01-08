@@ -314,27 +314,29 @@ function gnu_find_python2_settings()
 
 function ms_windows_find_python2_dir()
 {
-if [ -z "$1" ]; then
-	ROOT="${C_DRIVE}"
-else
-	ROOT="$1"
-fi
-
-# Use pre-existing python version, if there is one
-if which python2 >/dev/null; then
-	UCPP_PYTHON_DIR=$(dirname "`which python2`" | sed "s|[Cc]:/|$C_DRIVE|g")
-else
-	if which "${ROOT}Python27/python.exe" >/dev/null; then
-		UCPP_PYTHON_DIR="${ROOT}Python27"
+    echo "-----> Detecting python ..."
+	if [ -z "$1" ]; then
+		ROOT="${C_DRIVE}"
 	else
-		echo "Python not found"
-		echo "Install python or add it to system PATH"
-		echo "ucpp-setup FAILED"
-		exit 1
+		ROOT="$1"
 	fi
-fi
 
-echo "${UCPP_PYTHON_DIR}"
+	if which python2 >/dev/null; then
+		UCPP_PYTHON_DIR=$(dirname "`which python2`" | sed "s|[Cc]:/|$C_DRIVE|g")
+	else
+		if which "${ROOT}Python27/python.exe" >/dev/null; then
+			UCPP_PYTHON_DIR="${ROOT}Python27"
+		else
+			echo "Python not found"
+			echo "Install python or add it to system PATH"
+			echo "ucpp-setup FAILED"
+			exit 1
+		fi
+	fi
+
+	UCPP_PYTHON_BIN="${UCPP_PYTHON_DIR}/python.exe"
+
+    echo "-----> Python 2 found at: ${UCPP_PYTHON_BIN} [DONE]"
 }
 
 function ms_windows_find_windriver_bin()
