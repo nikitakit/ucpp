@@ -290,7 +290,7 @@ function gnu_find_python2_settings()
 {
 #find python major version 2
     echo "-----> Detecting python ..."
-	if which python >/dev/null; then
+	if command -v python >/dev/null; then
 		UCPP_PYTHON_MAJOR_VERSION=$( python --version 2>&1 | \
 			sed "s/Python \([0-9]\+\).*/\1/" )
 
