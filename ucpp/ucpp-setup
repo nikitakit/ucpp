@@ -222,7 +222,7 @@ EOF
 
 function install_gccdist()
 {
-	cd $HOME/.ucpp
+	cd "$HOME/.ucpp"
 
 	if [ -f gccdist.zip ]; then
 		echo "-----> gccdist already downloaded"
@@ -245,7 +245,7 @@ function install_gccdist()
 
 function install_wpilib()
 {
-	cd $HOME/.ucpp
+	cd "$HOME/.ucpp"
 	[ -d gccdist ] || die "Cannot install WPILib: gccdist not found"
 
 	echo -n "-----> Checking for WPILib updates... "
