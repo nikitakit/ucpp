@@ -222,7 +222,9 @@ EOF
 
 function install_gccdist()
 {
-	cd "$HOME/.ucpp"
+	mkdir -p "$C_DRIVE"
+	cd "$C_DRIVE"
+	cd ..
 
 	if [ -f gccdist.zip ]; then
 		echo "-----> gccdist already downloaded"
@@ -245,7 +247,10 @@ function install_gccdist()
 
 function install_wpilib()
 {
-	cd "$HOME/.ucpp"
+	mkdir -p "$C_DRIVE"
+	cd "$C_DRIVE"
+	cd ..
+
 	[ -d gccdist ] || die "Cannot install WPILib: gccdist not found"
 
 	echo -n "-----> Checking for WPILib updates... "
