@@ -1,7 +1,7 @@
 Universal compiling scripts for FRC
 
 System Requirements:
-  For Linux: wine, wput
+  For Linux: wine, wput, python2, tcl, curl
   For Windows/MSYSgit: MSYSgit, Python
   For Windows/Cygwin: Cygwin, Python, WindRiver
 
