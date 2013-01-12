@@ -222,6 +222,22 @@ EOF
 
 function install_gccdist()
 {
+	if echo "$C_DRIVE" | grep ' ' >/dev/null; then
+		cat<<EOF
+
+ERROR: gccdist cannot be installed in a path with spaces!
+
+The specified gccdist install directory is:
+    $C_DRIVE
+Please specify a different gccdist path using the -c option.
+For example: ucpp setup -c "/c/Robotics/gccdist/"
+
+IMPORTANT: the argument to -c must end with a trailing slash (/)
+
+EOF
+		die "Setup aborted"
+	fi
+
 	mkdir -p "$C_DRIVE"
 	cd "$C_DRIVE"
 	cd ..
