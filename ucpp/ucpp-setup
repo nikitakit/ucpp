@@ -250,7 +250,7 @@ EOF
 		echo "-----> gccdist download [DONE]"
 	fi
 
-	if [ -d gccdist ]; then
+	if [ -d gccdist/WindRiver ]; then
 		echo "-----> gccdist already installed"
 	else
 		echo "-----> gccdist install ..."
