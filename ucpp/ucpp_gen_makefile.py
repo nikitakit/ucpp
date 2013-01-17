@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 import os
+import fnmatch
 
 
 ##### Load Configuration #####
@@ -20,11 +21,9 @@ f.close()
 
 file_names = []
 
-for root,dirs,files in os.walk("."):
-    base=""
-    if root != ".":
-        base=root[2:]+"/"
-    file_names += [base+f[:-4] for f in files if f[-4:]==".cpp"]
+for root, dirnames, filenames in os.walk("."):
+    for filename in fnmatch.filter(filenames, "*.cpp"):
+        file_names.append(os.path.join(root, os.path.splitext(filename)[0]))
 
 ##### Generate makefile sections #####
 
