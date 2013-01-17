@@ -17,7 +17,7 @@ f = file(".wrmakefile", "r")
 wrmakefile = f.read()
 f.close()
 
-# Find all the C++ files in the current directory
+# Find all the C++ files in the current directory and subdirectories
 
 file_names = []
 
