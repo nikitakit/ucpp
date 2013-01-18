@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 import os
+import fnmatch
 
 
 ##### Load Configuration #####
@@ -16,15 +17,17 @@ f = file(".wrmakefile", "r")
 wrmakefile = f.read()
 f.close()
 
-# Find all the C++ files in the current directory
+# Find all the C++ files in the current directory and subdirectories
 
 file_names = []
 
-for root,dirs,files in os.walk("."):
-    base=""
-    if root != ".":
-        base=root[2:]+"/"
-    file_names += [base+f[:-4] for f in files if f[-4:]==".cpp"]
+for root, dirnames, filenames in os.walk("."):
+    for filename in fnmatch.filter(filenames, "*.cpp"):
+        # Remove leading "./" and file extension
+        path = os.path.join(root[2:], os.path.splitext(filename)[0])
+        # Output makefile must have POSIX paths, not platform-specific paths
+        path = path.replace(os.path.sep, "/")
+        file_names.append(path)
 
 ##### Generate makefile sections #####
 
