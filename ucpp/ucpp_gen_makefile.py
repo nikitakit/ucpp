@@ -23,7 +23,11 @@ file_names = []
 
 for root, dirnames, filenames in os.walk("."):
     for filename in fnmatch.filter(filenames, "*.cpp"):
-        file_names.append(os.path.join(root, os.path.splitext(filename)[0]))
+        # Remove leading "./" and file extension
+        path = os.path.join(root[2:], os.path.splitext(filename)[0])
+        # Output makefile must have POSIX paths, not platform-specific paths
+        path = path.replace(os.path.sep, "/")
+        file_names.append(path)
 
 ##### Generate makefile sections #####
 
