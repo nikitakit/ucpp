@@ -271,7 +271,7 @@ function install_wpilib()
 
 	echo -n "-----> Checking for WPILib updates... "
 	curl -s http://firstforge.wpi.edu/sf/frs/do/viewSummary/projects.wpilib/frs | grep '2013 FRC Update for C++' | sed "s/.*<a href=\"\([^\"]*\)\">.*/http:\/\/firstforge.wpi.edu\1/" | uniq | sed "s/;.*//" > wpilib_page1.url
-	curl -s `cat wpilib_page1.url` | grep "rel[0-9][0-9]*" | grep href | sed "s/.*\(rel[0-9]*\)/\1/" | sort -r | tail -n 1 | sed "s/.*<a href=\"\([^\"]*\).*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page2.url
+	curl -s `cat wpilib_page1.url` | grep "rel[0-9][0-9]*" | grep href | sed "s/.*\(rel[0-9]*\)/\1/" | sort | tail -n 1 | sed "s/.*<a href=\"\([^\"]*\).*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page2.url
 	curl -s `cat wpilib_page2.url` | grep "\.exe\s*<\/a>" | sed "s/.*<a href=\"\([^\"]*\)\".*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page3.url
 
 	touch wpilib_last_downloaded.url
