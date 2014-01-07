@@ -270,18 +270,16 @@ function install_wpilib()
 	[ -d gccdist ] || die "Cannot install WPILib: gccdist not found"
 
 	echo -n "-----> Checking for WPILib updates... "
-	curl -s http://firstforge.wpi.edu/sf/frs/do/viewSummary/projects.wpilib/frs | grep '2013 FRC Update for C++' | sed "s/.*<a href=\"\([^\"]*\)\">.*/http:\/\/firstforge.wpi.edu\1/" | uniq | sed "s/;.*//" > wpilib_page1.url
-	curl -s `cat wpilib_page1.url` | grep "rel[0-9][0-9]*" | grep href | sed "s/.*\(rel[0-9]*\)/\1/" | sort | tail -n 1 | sed "s/.*<a href=\"\([^\"]*\).*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page2.url
-	curl -s `cat wpilib_page2.url` | grep "\.exe\s*<\/a>" | sed "s/.*<a href=\"\([^\"]*\)\".*/http:\/\/firstforge.wpi.edu\1/" | sed "s/;.*//" > wpilib_page3.url
+	curl -s http://first.wpi.edu/FRC/c/update/Release/ | grep 'WorkbenchUpdate' | sed "s/.*<a href=\"\([^\"]*\)\">.*/http:\/\/first.wpi.edu\/FRC\/c\/update\/Release\/\1/" | uniq > wpilib_page.url
 
 	touch wpilib_last_downloaded.url
-	if [ "x`cat wpilib_page3.url`" == "x`cat wpilib_last_downloaded.url`" ]; then
+	if [ "x`cat wpilib_page.url`" == "x`cat wpilib_last_downloaded.url`" ]; then
 		echo "no new updates"
 	else
 		echo "updates available"
 		echo "-----> WPILib download ..."
-		curl `cat wpilib_page3.url` -o wpilibupdate.exe
-		mv wpilib_page3.url wpilib_last_downloaded.url
+		curl `cat wpilib_page.url` -o wpilibupdate.exe
+		mv wpilib_page.url wpilib_last_downloaded.url
 		echo "-----> WPILib download [DONE]"
 	fi
 
