@@ -270,7 +270,7 @@ function install_wpilib()
 	[ -d gccdist ] || die "Cannot install WPILib: gccdist not found"
 
 	echo -n "-----> Checking for WPILib updates... "
-	curl -s http://first.wpi.edu/FRC/c/update/Release/ | grep 'WorkbenchUpdate' | sed "s/.*<a href=\"\([^\"]*\)\">.*/http:\/\/first.wpi.edu\/FRC\/c\/update\/Release\/\1/" | uniq > wpilib_page.url
+	curl -s http://first.wpi.edu/FRC/c/update/Release/ | grep 'WorkbenchUpdate' | sed "s/.*<a href=\"\([^\"]*\)\">.*/http:\/\/first.wpi.edu\/FRC\/c\/update\/Release\/\1/" | uniq | sort | tail -n 1 > wpilib_page.url
 
 	touch wpilib_last_downloaded.url
 	if [ "x`cat wpilib_page.url`" == "x`cat wpilib_last_downloaded.url`" ]; then
