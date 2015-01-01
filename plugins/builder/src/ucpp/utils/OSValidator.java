@@ -1,8 +1,14 @@
 package ucpp.utils;
 
+/**
+ * This class can be used to determine which OS the user is running
+ */
 public class OSValidator
 {
 
+	/**
+	 * @return true if the OS is Windows false otherwise
+	 */
 	public static boolean isWindows()
 	{
 
@@ -12,6 +18,9 @@ public class OSValidator
 
 	}
 
+	/**
+	 * @return true if the system is a Mac false otherwise
+	 */
 	public static boolean isMac()
 	{
 
@@ -21,12 +30,15 @@ public class OSValidator
 
 	}
 
+	/**
+	 * @return true if the OS is Linux or Unix false otherwise
+	 */
 	public static boolean isUnix()
 	{
 
 		String os = System.getProperty("os.name").toLowerCase();
 		// linux or unix
-		return (os.indexOf("nix") >= 0 || os.indexOf("nux") >= 0);
+		return os.contains("unix") || os.contains("linux");
 
 	}
 }
