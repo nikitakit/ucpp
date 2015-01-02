@@ -1,6 +1,3 @@
-/**
- * 
- */
 package ucpp.utils;
 
 import org.eclipse.swt.layout.GridLayout;
@@ -68,7 +65,7 @@ public class SetupConfigDialog
 					if (!rv.wasSuccessful())
 					{
 						MessageBox mb = new MessageBox(sShell);
-						mb.setText("Error initializing UC++!"+ReturnValue.lineSeparator+rv.getOutput());
+						mb.setText("Error initializing UC++!"+ReturnValue.LINE_SEPARATOR+rv.getOutput());
 					}
 					else
 					{
@@ -92,7 +89,7 @@ public class SetupConfigDialog
 	{
 		setupType = new Combo(sShell, SWT.NONE);
 		setupType.setText("cygwin");
-		if (OSValidator.isMac()||OSValidator.isUnix())
+		if (OSValidator.isUnix())
 			setupType.setItems(new String[]{"linux-windriver", "linux-gccdist"});
 		else if (OSValidator.isWindows())
 			setupType.setItems(new String[]{"windows-cygwin", "windows-git"});
