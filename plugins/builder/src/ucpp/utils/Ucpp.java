@@ -52,7 +52,7 @@ public class Ucpp
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
 		
-		if (OSValidator.isUnix() || OSValidator.isMac())
+		if (OSValidator.isUnix())
 		{
 			String path = System.getenv("PATH");
 			if (!path.contains("ucpp"))
@@ -77,7 +77,7 @@ public class Ucpp
 		while ((line = input.readLine()) != null)
 		{
 			Activator.out.println(line);
-			lines += line + ReturnValue.lineSeparator;
+			lines += line + ReturnValue.LINE_SEPARATOR;
 		}
 
 		int exitVal = pr.waitFor();

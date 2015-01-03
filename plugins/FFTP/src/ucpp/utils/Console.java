@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.enterprisedt.net.ftp.FTPException;
+
+
 public class Console
 {
 	public static void main(String[] args)
@@ -28,7 +31,7 @@ public class Console
 			else
 				System.out.println("you need args, try 'upload file/path ucpp'");
 		}
-		catch (Exception e1)
+		catch (IOException | FTPException e1)
 		{
 			System.out.println("ERROR!");
 			e1.printStackTrace();

@@ -2,7 +2,7 @@ package ucpp.utils;
 
 public class ReturnValue
 {
-	public static final String lineSeparator = System.getProperty("line.separator");
+	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
 	private int exit;
 	private String message;
